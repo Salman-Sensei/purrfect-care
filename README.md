@@ -1,6 +1,155 @@
-# 🐾 Purrfect Care — Smart Cat Care Companion
+<div align="center">
 
-A full-stack MERN web app that helps cat owners manage daily care, track health, and organize vet visits — all in one beautiful, easy-to-use interface.
+<img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=90&auto=format&fit=crop" alt="Purrfect Care Banner" width="100%" style="border-radius: 16px" />
+
+<br/>
+<br/>
+
+# 🐾 Purrfect Care
+
+### Smart Cat Care Companion
+
+**Track daily care · Manage vet visits · Monitor health**
+— all in one beautiful, full-stack web app.
+
+<br/>
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-purrfect--care.vercel.app-7c6af7?style=for-the-badge&logoColor=white)](https://purrfect-care-seven.vercel.app)
+[![Backend API](https://img.shields.io/badge/⚡_Backend_API-Render-00B4D8?style=for-the-badge)](https://purrfect-care-api.onrender.com/api/health)
+[![GitHub](https://img.shields.io/badge/GitHub-Salman--Sensei-181717?style=for-the-badge&logo=github)](https://github.com/Salman-Sensei/purrfect-care)
+
+<br/>
+
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white)
+![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+
+</div>
+
+---
+
+## 📖 Table of Contents
+
+- [✨ Overview](#-overview)
+- [🚀 Live Deployment](#-live-deployment)
+- [🎨 Features](#-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📁 Project Structure](#-project-structure)
+- [⚡ Quick Start](#-quick-start)
+- [🌍 Deployment Guide](#-deployment-guide)
+- [📡 API Reference](#-api-reference)
+- [🌿 Git Workflow](#-git-workflow)
+- [👥 Team](#-team)
+
+---
+
+## ✨ Overview
+
+**Purrfect Care** is a production-ready MERN stack web application built as a Complex Engineering Problem (CEP) lab project for the Web Engineering course at Bahria University, Karachi.
+
+Cat owners — especially new and busy pet parents — have no single digital tool to manage their cat's complete care. Notes get lost, vet records are scattered, and medication schedules are forgotten. Purrfect Care solves all of that.
+
+> *"Every cat deserves great care."*
+
+---
+
+## 🚀 Live Deployment
+
+| Service | URL | Platform |
+|---------|-----|----------|
+| 🌐 Frontend | [purrfect-care-seven.vercel.app](https://purrfect-care-seven.vercel.app) | Vercel |
+| ⚡ Backend API | [purrfect-care-api.onrender.com](https://purrfect-care-api.onrender.com/api/health) | Render |
+| 🗄️ Database | MongoDB Atlas | Azure (Pune) |
+
+---
+
+## 🎨 Features
+
+### 🔐 Authentication
+- Secure signup and login with email and password
+- Passwords hashed with **bcryptjs** (10 salt rounds)
+- **JWT tokens** — 30-day sessions stored in localStorage
+- All routes protected — data completely isolated per user
+- Auto-redirect to login on token expiry
+
+### 🐱 Cat Profiles
+- Create detailed profiles for **multiple cats**
+- Fields: name, age, breed, weight, health conditions, allergies, notes, photo URL
+- Per-cat **colour theme** for visual distinction
+- Tabbed profile view: Basic Info · Health · Notes
+
+### ✅ Daily Care Checklist
+- Preset tasks (Morning feed, Medication, Play time, Litter box) + custom tasks
+- One-tap toggle with **animated checkmark**
+- **Purr Level™** progress meter — percentage of daily tasks done
+- 🎉 **Confetti animation** when all tasks are completed
+- Filter by date and by cat
+
+### 🏥 Vet Records
+- Log every vet visit: vaccination, checkup, dental, emergency, other
+- Store vet name, clinic, notes, and next visit reminder
+- **Health timeline** on dashboard showing recent visits
+- Upcoming visit alerts for the next 7 days
+- Colour-coded visit type badges
+
+### 📊 Dashboard
+- Personalised greeting with time-of-day message
+- **Cat Spotlight card** — featured cat with full photo
+- Animated stat counters: cats · tasks · upcoming visits
+- Today's task list with direct toggle
+- Upcoming vet visit reminders
+
+### 🔍 Symptom Guide
+- Type symptoms or tap quick-select buttons
+- Matches against **12 predefined health rules**
+- Colour-coded urgency: 🔵 Non-urgent · ⚠️ Warning · 🚨 Emergency
+- Always shows medical disclaimer
+
+### 🎨 6 Colour Themes
+| Theme | Type | Vibe |
+|-------|------|------|
+| 🤍 Pearl | Light | Clean, professional |
+| 🌸 Blossom | Light | Warm, caring |
+| 🌙 Midnight | Dark | Elegant, focused |
+| 🌿 Forest | Dark | Natural, calm |
+| 🌊 Ocean | Dark | Fresh, energetic |
+| 🔥 Ember | Dark | Warm, cozy |
+
+### 🌐 3D Landing Page
+- **Three.js** animated background — floating orbs, star field, particle swarm, torus rings
+- Custom cursor with smooth trailing ring
+- Scroll-reveal animations on all sections
+- Animated stat counters, feature cards, testimonials
+
+### 📱 Responsive Design
+- Desktop — persistent left sidebar
+- Mobile — fixed bottom navigation bar
+- Tested on Chrome, Firefox, Safari
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Frontend | React 18 + Vite | SPA, component-based UI |
+| Routing | React Router v6 | Client-side navigation |
+| Styling | Tailwind CSS + CSS Variables | Utility-first + 6-theme system |
+| 3D Graphics | Three.js | WebGL scene on landing page |
+| Animation | Framer Motion | Page transitions |
+| HTTP Client | Axios | API calls with JWT interceptors |
+| Backend | Node.js + Express.js | RESTful API server |
+| Database | MongoDB + Mongoose | NoSQL document store |
+| Auth | JWT + bcryptjs | Stateless auth, password hashing |
+| Frontend Deploy | Vercel | CDN, CI/CD from GitHub |
+| Backend Deploy | Render | Node.js hosting, auto-deploy |
+| DB Hosting | MongoDB Atlas | Cloud database, Azure-hosted |
 
 ---
 
@@ -8,12 +157,13 @@ A full-stack MERN web app that helps cat owners manage daily care, track health,
 
 ```
 purrfect-care/
+│
 ├── backend/
-│   ├── server.js
-│   ├── .env.example
+│   ├── server.js                  # Express app entry point
+│   ├── .env.example               # Environment template
 │   ├── package.json
 │   ├── config/
-│   │   └── db.js
+│   │   └── db.js                  # MongoDB connection
 │   ├── models/
 │   │   ├── User.js
 │   │   ├── Cat.js
@@ -30,42 +180,43 @@ purrfect-care/
 │   │   ├── taskController.js
 │   │   └── vetController.js
 │   └── middleware/
-│       └── authMiddleware.js
+│       └── authMiddleware.js      # JWT verification
 │
 └── frontend/
     ├── index.html
     ├── vite.config.js
     ├── tailwind.config.js
-    ├── package.json
     └── src/
-        ├── App.jsx
+        ├── App.jsx                # Router + context providers
         ├── main.jsx
-        ├── styles/index.css
         ├── context/
-        │   ├── AuthContext.jsx
-        │   └── ToastContext.jsx
+        │   ├── AuthContext.jsx    # JWT state management
+        │   ├── ThemeContext.jsx   # 6-theme colour system
+        │   └── ToastContext.jsx   # Toast notifications
         ├── hooks/
         │   ├── useCats.js
         │   ├── useTasks.js
         │   └── useVetRecords.js
         ├── services/
-        │   ├── api.js
+        │   ├── api.js             # Axios instance + interceptors
         │   └── auth.js
         ├── components/
         │   ├── Layout.jsx
         │   ├── Sidebar.jsx
         │   ├── Navbar.jsx
         │   ├── BottomNav.jsx
-        │   ├── ProtectedRoute.jsx
+        │   ├── ThemeSwitcher.jsx
         │   ├── Modal.jsx
-        │   ├── ConfirmDialog.jsx
-        │   ├── EmptyState.jsx
         │   ├── CatCard.jsx
         │   ├── TaskCard.jsx
         │   ├── CatForm.jsx
         │   ├── TaskForm.jsx
-        │   └── VetForm.jsx
+        │   ├── VetForm.jsx
+        │   ├── ConfirmDialog.jsx
+        │   ├── EmptyState.jsx
+        │   └── SkeletonCard.jsx
         └── pages/
+            ├── LandingPage.jsx    # 3D Three.js landing
             ├── AuthPage.jsx
             ├── DashboardPage.jsx
             ├── CatsPage.jsx
@@ -77,60 +228,47 @@ purrfect-care/
 
 ---
 
-## 🚀 Getting Started
+## ⚡ Quick Start
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB Atlas account (or local MongoDB)
-- npm or yarn
-
----
+- MongoDB Atlas account
+- npm
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourname/purrfect-care.git
+git clone https://github.com/Salman-Sensei/purrfect-care.git
 cd purrfect-care
 ```
-
----
 
 ### 2. Backend Setup
 
 ```bash
 cd backend
 npm install
-```
-
-Create a `.env` file:
-
-```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit your `.env`:
 
 ```env
-MONGO_URI=mongodb+srv://<user>:<password>@cluster0.example.mongodb.net/purrfectcare?retryWrites=true&w=majority
-JWT_SECRET=supersecretjwtkeychangeinproduction
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/purrfectcare?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_key_here
 PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
+OPENROUTER_API_KEY=your_openrouter_key_here
 ```
 
-Start the backend:
+Start backend:
 
 ```bash
-# Development (with auto-reload)
-npm run dev
-
-# Production
-npm start
+npm run dev     # development with hot reload
+npm start       # production
 ```
 
-Backend will run on `http://localhost:5000`
-
----
+Backend runs on `http://localhost:5000`
 
 ### 3. Frontend Setup
 
@@ -139,206 +277,182 @@ cd ../frontend
 npm install
 ```
 
-Create a `.env` file (optional — only if your API is on a different origin):
+Optional `.env` for custom API URL:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-> If you're using Vite's proxy (default), this is not needed.
-
-Start the frontend:
+Start frontend:
 
 ```bash
 npm run dev
 ```
 
-Frontend will run on `http://localhost:5173`
+Frontend runs on `http://localhost:5173` 🎉
 
 ---
 
-### 4. Open the app
+## 🌍 Deployment Guide
 
-Visit `http://localhost:5173` — you'll see the login page. Create an account and start adding cats! 🐱
+### Backend → Render
 
----
+| Setting | Value |
+|---------|-------|
+| Root Directory | `backend` |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Instance Type | Free |
 
-## 🌍 Deployment
+Add all environment variables from your `.env` in the Render dashboard.
 
-### Backend (Render / Railway)
+### Frontend → Vercel
 
-1. Create a new Web Service on [Render](https://render.com) or [Railway](https://railway.app)
-2. Connect your GitHub repo
-3. Set the **root directory** to `backend/`
-4. Set **build command**: `npm install`
-5. Set **start command**: `npm start`
-6. Add environment variables from `.env`
+| Setting | Value |
+|---------|-------|
+| Root Directory | `frontend` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
 
-### Frontend (Vercel)
+Add environment variable:
+```
+VITE_API_URL = https://your-backend.onrender.com/api
+```
 
-1. Create a new project on [Vercel](https://vercel.com)
-2. Connect your GitHub repo
-3. Set the **root directory** to `frontend/`
-4. Set **build command**: `npm run build`
-5. Set **output directory**: `dist`
-6. Add environment variable:
-   ```
-   VITE_API_URL=https://your-backend-url.render.com/api
-   ```
+### Database → MongoDB Atlas
+
+1. Create free M0 cluster
+2. Create database user
+3. Network Access → Add `0.0.0.0/0` (allow all IPs)
+4. Copy SRV connection string to `MONGO_URI`
 
 ---
 
 ## 📡 API Reference
 
-All protected routes require `Authorization: Bearer <token>` header.
-
-### 🔐 Auth
-
-| Method | Path | Body | Response |
-|--------|------|------|----------|
-| POST | `/api/auth/signup` | `{ name, email, password }` | `{ _id, name, email, token }` |
-| POST | `/api/auth/login` | `{ email, password }` | `{ _id, name, email, token }` |
-| GET | `/api/auth/me` | — | `{ _id, name, email }` |
-
-**Example signup:**
-```json
-POST /api/auth/signup
-{
-  "name": "Alex",
-  "email": "alex@example.com",
-  "password": "secret123"
-}
+All protected routes require:
 ```
+Authorization: Bearer <token>
+```
+
+### 🔐 Auth — `/api/auth`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/signup` | No | Register new user |
+| POST | `/login` | No | Login, receive JWT |
+| GET | `/me` | Yes | Get current user |
+
+### 🐱 Cats — `/api/cats`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/` | Yes | Get all cats |
+| GET | `/:id` | Yes | Get single cat |
+| POST | `/` | Yes | Create cat |
+| PUT | `/:id` | Yes | Update cat |
+| DELETE | `/:id` | Yes | Delete cat |
+
+### ✅ Tasks — `/api/tasks`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/` | Yes | Get tasks (`?catId=` `?date=`) |
+| POST | `/` | Yes | Create task |
+| PATCH | `/:id` | Yes | Toggle completed |
+| PUT | `/:id` | Yes | Update task |
+| DELETE | `/:id` | Yes | Delete task |
+
+### 🏥 Vet Records — `/api/vet`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/` | Yes | Get records (`?catId=`) |
+| POST | `/` | Yes | Create record |
+| PUT | `/:id` | Yes | Update record |
+| DELETE | `/:id` | Yes | Delete record |
+
+**Visit types:** `vaccination` · `checkup` · `dental` · `emergency` · `other`
 
 ---
 
-### 🐱 Cats
+## 🌿 Git Workflow
 
-| Method | Path | Body | Description |
-|--------|------|------|-------------|
-| GET | `/api/cats` | — | Get all cats for user |
-| GET | `/api/cats/:id` | — | Get single cat |
-| POST | `/api/cats` | Cat data | Create cat |
-| PUT | `/api/cats/:id` | Cat data | Update cat |
-| DELETE | `/api/cats/:id` | — | Delete cat |
+This project uses a **feature branch workflow** to keep the live site safe.
 
-**Cat body fields:**
-```json
-{
-  "name": "Luna",
-  "age": "2 years",
-  "breed": "Persian",
-  "weight": 4.2,
-  "healthConditions": "mild asthma",
-  "allergies": "chicken",
-  "notes": "Loves laser toys",
-  "image": "https://...",
-  "color": "#8B5CF6"
-}
 ```
+main        ← live production (auto-deploys to Vercel + Render)
+develop     ← integration branch (test here first)
+  ├── feature/nearest-vet
+  ├── feature/food-recommendations
+  └── feature/ai-symptom-detector
+```
+
+### For Team Members
+
+```bash
+# 1. Always start from latest develop
+git checkout develop
+git pull origin develop
+
+# 2. Create your feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Do your work, commit often
+git add .
+git commit -m "feat: describe what you did"
+
+# 4. Push your branch
+git push origin feature/your-feature-name
+
+# 5. Open Pull Request on GitHub → base: develop
+```
+
+### Rules
+- ❌ Never push directly to `main`
+- ❌ Never push directly to `develop`
+- ✅ Always work on a `feature/` branch
+- ✅ Open a Pull Request for review
+- ✅ Tag `Salman-Sensei` as reviewer
 
 ---
 
-### ✅ Tasks
-
-| Method | Path | Body / Query | Description |
-|--------|------|------|-------------|
-| GET | `/api/tasks` | `?catId=&date=` | Get tasks (filtered) |
-| POST | `/api/tasks` | Task data | Create task |
-| PATCH | `/api/tasks/:id` | — | Toggle completion |
-| PUT | `/api/tasks/:id` | Task data | Update task |
-| DELETE | `/api/tasks/:id` | — | Delete task |
-
-**Task body fields:**
-```json
-{
-  "catId": "64abc...",
-  "title": "Morning feed",
-  "emoji": "🐟",
-  "date": "2024-01-15",
-  "recurring": false
-}
-```
-
----
-
-### 🏥 Vet Records
-
-| Method | Path | Body / Query | Description |
-|--------|------|------|-------------|
-| GET | `/api/vet` | `?catId=` | Get all records |
-| POST | `/api/vet` | Record data | Create record |
-| PUT | `/api/vet/:id` | Record data | Update record |
-| DELETE | `/api/vet/:id` | — | Delete record |
-
-**VetRecord body fields:**
-```json
-{
-  "catId": "64abc...",
-  "date": "2024-01-10",
-  "type": "vaccination",
-  "vetName": "Dr. Smith",
-  "clinic": "Happy Paws Clinic",
-  "notes": "FVRCP booster given. No reactions.",
-  "nextVisitDate": "2025-01-10"
-}
-```
-
-**Visit types:** `vaccination` | `checkup` | `dental` | `emergency` | `other`
-
----
-
-## ✨ Features
+## 📊 Feature Status
 
 | Feature | Status |
 |---------|--------|
-| JWT Authentication (signup/login/logout) | ✅ |
-| Cat profiles (CRUD) | ✅ |
-| Daily task checklist with toggle | ✅ |
-| Vet records with visit types | ✅ |
-| Dashboard with Purr Level meter | ✅ |
-| Upcoming vet visit alerts | ✅ |
-| Symptom Helper (static rules, 10 conditions) | ✅ |
-| Dark mode toggle | ✅ |
-| Mobile responsive with bottom nav | ✅ |
-| Toast notifications | ✅ |
-| Empty state illustrations | ✅ |
-| Cat filter on tasks & vet records | ✅ |
+| JWT Authentication | ✅ Live |
+| Cat profiles (CRUD) | ✅ Live |
+| Daily task checklist | ✅ Live |
+| Purr Level™ progress meter | ✅ Live |
+| Vet records with visit types | ✅ Live |
+| Dashboard with health timeline | ✅ Live |
+| Upcoming vet visit alerts | ✅ Live |
+| Symptom Helper (12 conditions) | ✅ Live |
+| 6 colour themes | ✅ Live |
+| Three.js 3D landing page | ✅ Live |
+| Mobile responsive | ✅ Live |
+| Toast notifications | ✅ Live |
+| Nearest vet finder (Google Maps) | 🔄 In Progress |
+| AI-powered symptom detector | 📅 Planned |
+| Food recommendations | 📅 Planned |
+| Email reminders for vet visits | 📅 Planned |
+| Cloud image upload | 📅 Planned |
 
 ---
 
-## 🎨 Tech Stack
+## 👥 Team
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, Vite, Tailwind CSS, React Router v6 |
-| HTTP Client | Axios |
-| Backend | Node.js, Express.js |
-| Database | MongoDB + Mongoose |
-| Auth | JWT + bcryptjs |
-| Fonts | DM Sans + DM Serif Display |
+| Name | Role | GitHub |
+|------|------|--------|
+| **Salman Khan** | Team Lead · Full-Stack Developer | [@Salman-Sensei](https://github.com/Salman-Sensei) |
+| Teammate 2 | Frontend Developer | — |
+| Teammate 3 | Backend Developer | — |
+| Teammate 4 | UI/UX + Testing | — |
 
----
-
-## 🐱 Sample Data (Optional Seed)
-
-You can quickly test by using the signup endpoint and then creating a cat via the UI, or POST directly:
-
-```bash
-# 1. Signup
-curl -X POST http://localhost:5000/api/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Alex","email":"alex@test.com","password":"test123"}'
-
-# 2. Use the returned token for subsequent requests
-TOKEN="your_token_here"
-
-# 3. Add a cat
-curl -X POST http://localhost:5000/api/cats \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Luna","age":"2 years","breed":"Persian","color":"#8B5CF6"}'
-```
+**University:** Bahria University, Karachi Campus
+**Course:** Web Engineering (SEL 310) · Spring 2026
+**Class:** BSE – 6(C)
 
 ---
 
@@ -348,4 +462,12 @@ MIT — free to use for personal and commercial projects.
 
 ---
 
-Made with 💜 for cat parents everywhere. 🐾
+<div align="center">
+
+Made with 💜 for cat parents everywhere
+
+**[purrfect-care-seven.vercel.app](https://purrfect-care-seven.vercel.app) · [GitHub](https://github.com/Salman-Sensei/purrfect-care)**
+
+🐾
+
+</div>
