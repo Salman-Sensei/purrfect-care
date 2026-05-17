@@ -29,6 +29,7 @@ app.use('/api/cats', require('./routes/catRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/vet', require('./routes/vetRoutes'));
 app.use('/api/assistant', require('./routes/assistant'));
+app.use('/api/products',  require('./routes/products'));
 
 // Health check
 app.get('/api/health', (req, res) => {

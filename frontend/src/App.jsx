@@ -13,6 +13,7 @@ import CatProfilePage    from './pages/CatProfilePage'
 import ChecklistPage     from './pages/ChecklistPage'
 import VetRecordsPage    from './pages/VetRecordsPage'
 import SymptomHelperPage from './pages/SymptomHelperPage'
+import ProductRecommendationsPage from './pages/ProductRecommendationsPage'
 
 function RootRoute() {
   const { isAuthenticated, loading } = useAuth()
@@ -57,6 +58,7 @@ export default function App() {
                 <Route path="checklist"  element={<ChecklistPage />} />
                 <Route path="vet"        element={<VetRecordsPage />} />
                 <Route path="symptoms"   element={<SymptomHelperPage />} />
+                <Route path="products"   element={<ProductRecommendationsPage />} />
               </Route>
 
               <Route path="*" element={<Navigate to="/" replace />} />
