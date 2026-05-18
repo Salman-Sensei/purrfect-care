@@ -14,14 +14,13 @@ const app = express();
 connectDB();
 
 // 3. MIDDLEWARE
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://purrfect-care-git-feature-neares-f7befb-salman-senseis-projects.vercel.app'
-];
-
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (
+      !origin ||
+      origin.includes('localhost') ||
+      origin.includes('vercel.app')
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -29,8 +28,6 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
 
 // 4. ROUTES
 app.use('/api/auth', require('./routes/authRoutes'));
