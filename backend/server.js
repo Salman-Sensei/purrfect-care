@@ -14,12 +14,21 @@ const app = express();
 connectDB();
 
 // 3. MIDDLEWARE
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://purrfect-care-git-feature-neares-f7befb-salman-senseis-projects.vercel.app'
+];
+
 app.use(cors({
-  // Ensure this matches your Vercel URL exactly (no trailing slash)
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,6 +38,7 @@ app.use('/api/cats', require('./routes/catRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/vet', require('./routes/vetRoutes'));
 app.use('/api/assistant', require('./routes/assistant'));
+app.use('/api/products',  require('./routes/products'));
 
 // Health check
 app.get('/api/health', (req, res) => {
