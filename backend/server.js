@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// 1. LOAD DOTENV FIRST (Before any other local imports)
+// 1. LOAD DOTENV FIRST
 dotenv.config();
 
 const connectDB = require('./config/db');
@@ -10,10 +10,12 @@ const connectDB = require('./config/db');
 const app = express();
 
 // 2. DATABASE CONNECTION
-// Ensure your MONGO_URI is in Render's Environment tab
 connectDB();
 
 // 3. MIDDLEWARE
+// 🔥 CHANGE 1: Added JSON parser so backend can actually read signup data (req.body)
+app.use(express.json()); 
+
 app.use(cors({
   origin: function (origin, callback) {
     if (
@@ -23,7 +25,9 @@ app.use(cors({
     ) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // 🔥 CHANGE 2: Pass 'false' instead of throwing a hard 'new Error()' 
+      // This stops the server from crashing during the browser handshake
+      callback(null, false); 
     }
   },
   credentials: true,
