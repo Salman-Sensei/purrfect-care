@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
-// 1. LOAD DOTENV FIRST (Before any other local imports)
+// 1. LOAD DOTENV FIRST
 dotenv.config();
 
 const connectDB = require('./config/db');
@@ -10,18 +10,38 @@ const connectDB = require('./config/db');
 const app = express();
 
 // 2. DATABASE CONNECTION
-// Ensure your MONGO_URI is in Render's Environment tab
 connectDB();
 
 // 3. MIDDLEWARE
+app.use(express.json());
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://purrfect-care-seven.vercel.app',
+  'https://purrfect-care-git-develop-salman-senseis-projects.vercel.app',
+];
+
 app.use(cors({
-  // Ensure this matches your Vercel URL exactly (no trailing slash)
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+
+    // allow requests with no origin (mobile apps/postman/etc)
+    if (!origin) return callback(null, true);
+
+    // allow exact origins
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // allow ALL vercel preview deployments
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
+
   credentials: true,
 }));
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
 
 // 4. ROUTES
 app.use('/api/auth', require('./routes/authRoutes'));

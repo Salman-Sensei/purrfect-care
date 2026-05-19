@@ -90,6 +90,9 @@ function VetRecordCard({ record, onEdit, onDelete }) {
 
 // ── Nearby Vets Map (embedded) ───────────────────────────────────────────────
 function NearbyVetsMap() {
+
+  console.log("MAP KEY:", import.meta.env.VITE_GOOGLE_MAPS_API_KEY)
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries: LIBRARIES,
@@ -138,7 +141,12 @@ function NearbyVetsMap() {
     setSelectedVet(null)
     const service = new window.google.maps.places.PlacesService(mapRef.current)
     service.nearbySearch(
-      { location, radius: 5000, type: 'veterinary_care' },
+      {
+  location,
+  radius: 5000,
+  type: 'veterinary_care',
+  keyword: 'veterinary clinic vet animal hospital'
+    },
       (results, status) => {
         setSearching(false)
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
@@ -548,7 +556,7 @@ export default function VetRecordsPage() {
         </div>
       </div>
 
-      {/* Nearby vets map — toggles in/out */}
+      {/* Nearby vets map .. toggles in/out */}
       <AnimatePresence>
         {showMap && <NearbyVetsMap key="nearby-map" />}
       </AnimatePresence>
@@ -585,7 +593,7 @@ export default function VetRecordsPage() {
       {!loading && filtered.length === 0 && (
         <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="card">
           <EmptyState image={CAT_VET} emoji="🏥" title="No vet records yet"
-            description="Keep your cat's health history organised — add vaccinations, checkups, and more."
+            description="Keep your cat's health history organised .. add vaccinations, checkups, and more."
             action={<button onClick={() => setShowAdd(true)} className="btn-primary">Add First Record</button>} />
         </motion.div>
       )}

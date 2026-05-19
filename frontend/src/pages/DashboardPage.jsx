@@ -186,7 +186,7 @@ function HealthTimeline({ records }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">{TYPE_ICON[r.type]}</span>
-                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{r.catId?.name} — {r.type}</p>
+                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{r.catId?.name} ... {r.type}</p>
                 </div>
                 <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                   {new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -213,8 +213,8 @@ const HERO_IMGS = [
 ]
 const GREETINGS = {
   morning:   ["Rise and shine! Your cat is ready for a great day.", "Good morning! Don't forget to top up the water bowl."],
-  afternoon: ["Afternoon check-in — how's your kitty doing?", "Midday reminder: a little playtime goes a long way."],
-  evening:   ["Wind down time — have you given your cat some cuddles?", "Evening! A warm lap is the best thing for both of you."],
+  afternoon: ["Afternoon check-in ... how's your kitty doing?", "Midday reminder: a little playtime goes a long way."],
+  evening:   ["Wind down time ... have you given your cat some cuddles?", "Evening! A warm lap is the best thing for both of you."],
 }
 
 export default function DashboardPage() {
@@ -346,7 +346,7 @@ export default function DashboardPage() {
       {/* ── TASKS + TIMELINE ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-        {/* Tasks — 3/5 */}
+        {/* Tasks ... 3/5 */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }}
           className="t-card overflow-hidden lg:col-span-3">
           <div className="px-6 py-5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-soft)' }}>
@@ -384,7 +384,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Timeline + upcoming — 2/5 */}
+        {/* Timeline + upcoming ... 2/5 */}
         <div className="lg:col-span-2 flex flex-col gap-5">
           <HealthTimeline records={records} />
 

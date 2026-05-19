@@ -259,7 +259,7 @@ function LandingNav() {
   )
 }
 
-// ─── Hero Section — Split Layout with 3D orb ──────────────────────────────
+// ─── Hero Section ... Split Layout with 3D orb ──────────────────────────────
 function HeroSection() {
   const mouse = useRef({ x: 0, y: 0 })
   const sectionRef = useRef(null)
@@ -338,7 +338,7 @@ function HeroSection() {
               className="text-white/65 text-lg md:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed mb-10"
             >
               Track daily care, vet visits, and health in one beautiful app.
-              Your cat deserves nothing less than the best — and so do you.
+              Your cat deserves nothing less than the best ... and so do you.
             </motion.p>
 
             {/* CTA buttons */}
@@ -466,7 +466,7 @@ function FeaturesSection() {
         </svg>
       ),
       title: 'Daily Care Checklist',
-      desc: 'Build healthy routines with a smart daily checklist. Track feeding, medication, play time, and litter box cleaning — all in one tap.',
+      desc: 'Build healthy routines with a smart daily checklist. Track feeding, medication, play time, and litter box cleaning ... all in one tap.',
       img: IMGS.checklist,
       color: 'from-brand-500 to-brand-700',
       badge: 'Most Used',
@@ -568,7 +568,7 @@ function EducationSection() {
       img:   IMGS.litter,
       tag:   'Behaviour',
       title: 'Litter Box Problems?',
-      body:  "Peeing outside the box is the #1 reason cats are surrendered to shelters — but it's almost always fixable. Our Symptom Helper guides you through common causes and solutions.",
+      body:  "Peeing outside the box is the #1 reason cats are surrendered to shelters ... but it's almost always fixable. Our Symptom Helper guides you through common causes and solutions.",
       cta:   'Use symptom helper →',
       to:    '/login',
     },
@@ -591,7 +591,7 @@ function EducationSection() {
             Cat Care Made <em className="not-italic text-brand-600">Simple</em>
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-lg max-w-xl mx-auto">
-            Vet-informed advice, written for real cat parents — not textbooks.
+            Vet-informed advice, written for real cat parents ... not textbooks.
           </p>
         </Reveal>
 
@@ -698,7 +698,7 @@ function HowItWorksSection() {
         <Reveal delay={1.2} className="text-center mt-14">
           <Link to="/login"
             className="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-base px-8 py-4 rounded-2xl shadow-glow group active:scale-95 transition-all">
-            Start Now — It's Free
+            Start Now ... It's Free
             <span className="group-hover:animate-wiggle transition-all text-xl">🐾</span>
           </Link>
           <p className="text-slate-400 text-xs mt-3">No credit card required. Always free.</p>
@@ -724,14 +724,14 @@ function HowItWorksSection() {
 function TestimonialsSection() {
   const testimonials = [
     {
-      quote: "Purrfect Care changed how I look after my two cats. The vet record tracker alone is worth it — I used to lose all the papers!",
+      quote: "Purrfect Care changed how I look after my two cats. The vet record tracker alone is worth it ... I used to lose all the papers!",
       name:  'Sarah K.',
       role:  'Cat mum of 2 · Lahore',
       avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80&auto=format&fit=crop&facepad=3',
       stars: 5,
     },
     {
-      quote: "Simple, beautiful, and actually useful. I love the Symptom Helper — it saved me an emergency vet trip last month!",
+      quote: "Simple, beautiful, and actually useful. I love the Symptom Helper ... it saved me an emergency vet trip last month!",
       name:  'Mike T.',
       role:  'First-time cat owner · Karachi',
       avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&auto=format&fit=crop&facepad=3',
@@ -811,10 +811,10 @@ function SplitShowcaseSection() {
               Build healthy routines<br />your cat will <em className="not-italic text-brand-600">love</em>
             </h2>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-              From morning feeding to evening play sessions — Purrfect Care's daily checklist keeps your cat's routine consistent and you stress-free.
+              From morning feeding to evening play sessions ... Purrfect Care's daily checklist keeps your cat's routine consistent and you stress-free.
             </p>
             <ul className="space-y-2">
-              {['Preset tasks (feeding, play, meds, litter)', 'Visual progress bar — the Purr Level™', 'Filter by cat or date', 'Mobile-first, works on any device'].map(item => (
+              {['Preset tasks (feeding, play, meds, litter)', 'Visual progress bar ... the Purr Level™', 'Filter by cat or date', 'Mobile-first, works on any device'].map(item => (
                 <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
                   <span className="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-brand-600 dark:text-brand-400 text-xs font-bold flex-shrink-0">✓</span>
                   {item}
@@ -939,7 +939,7 @@ function CTASection() {
               className="group inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-500
                          text-white font-bold text-base px-10 py-4 rounded-2xl shadow-glow
                          hover:shadow-hover transition-all duration-300 active:scale-95">
-              Get Started Free — It's Free
+              Get Started Free ... It's Free
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </Link>
             <Link to="/login"
