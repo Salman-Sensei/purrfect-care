@@ -6,11 +6,12 @@ import { useToast } from '../context/ToastContext'
 import { CAT_LOGIN } from '../utils/catImages'
 
 export default function AuthPage() {
-  const [mode, setMode]         = useState('login')
-  const [form, setForm]         = useState({ name: '', email: '', password: '' })
-  const [errors, setErrors]     = useState({})
-  const [loading, setLoading]   = useState(false)
-  const [showPass, setShowPass] = useState(false)
+  const [mode, setMode]             = useState('login')
+  const [form, setForm]             = useState({ name: '', email: '', password: '', confirmPassword: '' })
+  const [errors, setErrors]         = useState({})
+  const [loading, setLoading]       = useState(false)
+  const [showPass, setShowPass]     = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const { login, signup, isAuthenticated } = useAuth()
   const { addToast } = useToast()
@@ -20,13 +21,66 @@ export default function AuthPage() {
 
   const set = (k, v) => { setForm(p => ({ ...p, [k]: v })); setErrors(p => ({ ...p, [k]: '' })) }
 
+  // Password strength checker
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return null
+    let score = 0
+    if (pwd.length >= 6)  score++
+    if (pwd.length >= 10) score++
+    if (/[A-Z]/.test(pwd)) score++
+    if (/[0-9]/.test(pwd)) score++
+    if (/[^A-Za-z0-9]/.test(pwd)) score++
+    if (score <= 1) return { label: 'Weak',   color: '#ef4444', width: '25%'  }
+    if (score <= 2) return { label: 'Fair',   color: '#f97316', width: '50%'  }
+    if (score <= 3) return { label: 'Good',   color: '#f59e0b', width: '75%'  }
+    return               { label: 'Strong', color: '#10b981', width: '100%' }
+  }
+
+  const strength = mode === 'signup' ? getPasswordStrength(form.password) : null
+
   const validate = () => {
     const e = {}
-    if (mode === 'signup' && !form.name.trim()) e.name = 'Your name is required'
-    if (!form.email.trim()) e.email = 'Email is required'
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Enter a valid email address'
-    if (!form.password) e.password = 'Password is required'
-    else if (mode === 'signup' && form.password.length < 6) e.password = 'Password must be at least 6 characters'
+
+    if (mode === 'signup') {
+      // Name
+      if (!form.name.trim())
+        e.name = 'Your name is required'
+      else if (form.name.trim().length < 2)
+        e.name = 'Name must be at least 2 characters'
+      else if (form.name.trim().length > 50)
+        e.name = 'Name must be 50 characters or less'
+      else if (!/^[a-zA-Z\s'-]+$/.test(form.name.trim()))
+        e.name = 'Name can only contain letters, spaces, hyphens and apostrophes'
+    }
+
+    // Email
+    if (!form.email.trim())
+      e.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(form.email))
+      e.email = 'Enter a valid email address'
+    else if (form.email.length > 100)
+      e.email = 'Email is too long'
+
+    // Password
+    if (!form.password)
+      e.password = 'Password is required'
+    else if (mode === 'signup') {
+      if (form.password.length < 6)
+        e.password = 'Password must be at least 6 characters'
+      else if (form.password.length > 128)
+        e.password = 'Password is too long'
+      else if (/^\s+|\s+$/.test(form.password))
+        e.password = 'Password cannot start or end with spaces'
+    }
+
+    // Confirm password (signup only)
+    if (mode === 'signup') {
+      if (!form.confirmPassword)
+        e.confirmPassword = 'Please confirm your password'
+      else if (form.password !== form.confirmPassword)
+        e.confirmPassword = 'Passwords do not match'
+    }
+
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -50,6 +104,12 @@ export default function AuthPage() {
       if (msg.toLowerCase().includes('email')) setErrors({ email: msg })
       else if (msg.toLowerCase().includes('password')) setErrors({ password: msg })
     } finally { setLoading(false) }
+  }
+
+  const switchMode = (m) => {
+    setMode(m)
+    setErrors({})
+    setForm({ name: '', email: '', password: '', confirmPassword: '' })
   }
 
   return (
@@ -138,7 +198,7 @@ export default function AuthPage() {
               borderRadius: '1rem', padding: '0.25rem', marginBottom: '1.75rem', gap: '0.25rem',
             }}>
               {['login', 'signup'].map(m => (
-                <button key={m} onClick={() => { setMode(m); setErrors({}) }}
+                <button key={m} onClick={() => switchMode(m)}
                   style={{
                     flex: 1, padding: '0.625rem', borderRadius: '0.75rem',
                     fontSize: '0.875rem', fontWeight: 700, border: 'none', cursor: 'pointer',
@@ -175,7 +235,7 @@ export default function AuthPage() {
                       style={{ ...fieldStyle, borderColor: errors.name ? 'var(--coral)' : 'var(--border)' }}
                       value={form.name} onChange={e => set('name', e.target.value)}
                       placeholder="e.g. Alex Johnson" autoComplete="name"
-                      onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
+                      onFocus={e => { e.target.style.borderColor = errors.name ? 'var(--coral)' : 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
                       onBlur={e => { e.target.style.borderColor = errors.name ? 'var(--coral)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
                     />
                     {errors.name && <p style={errorStyle}>⚠️ {errors.name}</p>}
@@ -189,7 +249,7 @@ export default function AuthPage() {
                   style={{ ...fieldStyle, borderColor: errors.email ? 'var(--coral)' : 'var(--border)' }}
                   type="email" value={form.email} onChange={e => set('email', e.target.value)}
                   placeholder="you@example.com" autoComplete="email"
-                  onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
+                  onFocus={e => { e.target.style.borderColor = errors.email ? 'var(--coral)' : 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
                   onBlur={e => { e.target.style.borderColor = errors.email ? 'var(--coral)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
                 />
                 {errors.email && <p style={errorStyle}>⚠️ {errors.email}</p>}
@@ -204,7 +264,7 @@ export default function AuthPage() {
                     value={form.password} onChange={e => set('password', e.target.value)}
                     placeholder={mode === 'signup' ? 'At least 6 characters' : '••••••••'}
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                    onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
+                    onFocus={e => { e.target.style.borderColor = errors.password ? 'var(--coral)' : 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
                     onBlur={e => { e.target.style.borderColor = errors.password ? 'var(--coral)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
                   />
                   <button type="button" onClick={() => setShowPass(s => !s)}
@@ -212,8 +272,52 @@ export default function AuthPage() {
                     {showPass ? '🙈' : '👁️'}
                   </button>
                 </div>
+                {/* Password strength bar — signup only */}
+                {mode === 'signup' && form.password && strength && (
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <div style={{ height: '4px', borderRadius: '2px', background: 'var(--border)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: strength.width, background: strength.color, borderRadius: '2px', transition: 'width 0.3s, background 0.3s' }} />
+                    </div>
+                    <p style={{ fontSize: '0.68rem', marginTop: '0.25rem', color: strength.color, fontWeight: 700 }}>
+                      {strength.label} password
+                    </p>
+                  </div>
+                )}
                 {errors.password && <p style={errorStyle}>⚠️ {errors.password}</p>}
               </div>
+
+              {/* Confirm password — signup only */}
+              <AnimatePresence>
+                {mode === 'signup' && (
+                  <motion.div key="confirm-field" initial={{ opacity: 0, height: 0, y: -8 }} animate={{ opacity: 1, height: 'auto', y: 0 }} exit={{ opacity: 0, height: 0, y: -8 }} transition={{ duration: 0.25 }}>
+                    <label style={labelStyle}>Confirm Password</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        style={{ ...fieldStyle, borderColor: errors.confirmPassword ? 'var(--coral)' : form.confirmPassword && form.password === form.confirmPassword ? '#10b981' : 'var(--border)', paddingRight: '3rem' }}
+                        type={showConfirm ? 'text' : 'password'}
+                        value={form.confirmPassword}
+                        onChange={e => set('confirmPassword', e.target.value)}
+                        placeholder="Re-enter your password"
+                        autoComplete="new-password"
+                        onFocus={e => { e.target.style.borderColor = errors.confirmPassword ? 'var(--coral)' : 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
+                        onBlur={e => { e.target.style.borderColor = errors.confirmPassword ? 'var(--coral)' : form.confirmPassword && form.password === form.confirmPassword ? '#10b981' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
+                      />
+                      <button type="button" onClick={() => setShowConfirm(s => !s)}
+                        style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.9rem', padding: '0.2rem' }}>
+                        {showConfirm ? '🙈' : '👁️'}
+                      </button>
+                    </div>
+                    {/* Match indicator */}
+                    {form.confirmPassword && !errors.confirmPassword && (
+                      <p style={{ fontSize: '0.68rem', marginTop: '0.25rem', fontWeight: 700,
+                        color: form.password === form.confirmPassword ? '#10b981' : 'var(--coral)' }}>
+                        {form.password === form.confirmPassword ? '✅ Passwords match' : '❌ Passwords do not match'}
+                      </p>
+                    )}
+                    {errors.confirmPassword && <p style={errorStyle}>⚠️ {errors.confirmPassword}</p>}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <button type="submit" disabled={loading}
                 style={{
@@ -238,7 +342,7 @@ export default function AuthPage() {
             <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                 {mode === 'login' ? 'New here? ' : 'Already have an account? '}
-                <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setErrors({}) }}
+                <button onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-1)', fontWeight: 700, fontSize: '0.875rem', fontFamily: 'inherit', padding: 0 }}>
                   {mode === 'login' ? 'Create a free account' : 'Sign in instead'}
                 </button>
