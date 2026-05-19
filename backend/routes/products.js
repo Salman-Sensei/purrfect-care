@@ -115,78 +115,98 @@ Recommend 5 products tailored to this cat.`;
 
 /* ── Static fallback recommendations ──────────────────────────────────────── */
 function getFallbackProducts(category, cat, country) {
-  const q      = (term) => encodeURIComponent(`${term} cat`)
+  // Build breed/age/health context for smarter search queries
+  const breed      = cat.breed?.trim() || ''
+  const age        = cat.age?.trim() || ''
+  const conditions = cat.healthConditions?.trim() || ''
+  const allergies  = cat.allergies?.trim() || ''
+
+  // Compose a context-aware search prefix e.g. "Persian senior cat" or "kitten cat"
+  const catContext = [breed, age && age.toLowerCase().includes('senior') ? 'senior' : age && (age.includes('kitten') || age === '0' || age === '1') ? 'kitten' : '', 'cat']
+    .filter(Boolean).join(' ')
+
+  // Build a rich search term combining product term + cat context + health notes
+  const richQuery = (term) => {
+    const parts = [term, breed || null, conditions ? conditions.split(/[,;]/)[0].trim() : null]
+      .filter(Boolean)
+    return parts.join(' ') + ' cat'
+  }
+
+  const q      = (term) => encodeURIComponent(richQuery(term))
+  const qSimple = (term) => encodeURIComponent(`${term} ${catContext}`)
+
   const amazon = (term) => `https://www.amazon.com/s?k=${q(term)}`
   const chewy  = (term) => `https://www.chewy.com/s?query=${q(term)}`
-  const daraz  = (term) => `https://www.daraz.pk/catalog/?q=${q(term)}`
+  const daraz  = (term) => `https://www.daraz.pk/catalog/?q=${qSimple(term)}`
   const isPK   = country === 'PK'
-  const link   = (term) => isPK
+
+  const link = (term) => isPK
     ? [{ label: 'Daraz', url: daraz(term) }, { label: 'Amazon', url: amazon(term) }]
     : [{ label: 'Chewy', url: chewy(term) }, { label: 'Amazon', url: amazon(term) }]
 
   const catalog = {
     food: [
-      { name: 'Royal Canin Breed Specific Dry Food', brand: 'Royal Canin', description: 'Tailored nutrition formulated for specific cat breeds.', why: `Great for ${cat.breed || 'your cat'}'s unique dietary needs.`, priceRange: '$25–$60', links: link('Royal Canin cat food') },
-      { name: "Hill's Science Diet Adult Cat Food", brand: "Hill's", description: 'Vet-recommended balanced nutrition for adult cats.', why: 'Supports healthy weight and digestion.', priceRange: '$20–$50', links: link('Hills Science Diet cat food') },
-      { name: 'Purina Pro Plan High Protein', brand: 'Purina', description: 'High-protein formula with real chicken as first ingredient.', why: 'Ideal for active cats needing lean muscle support.', priceRange: '$18–$45', links: link('Purina Pro Plan cat food') },
-      { name: 'Wellness CORE Grain-Free', brand: 'Wellness', description: 'Grain-free, protein-rich formula with no fillers.', why: 'Good choice if your cat has grain sensitivities.', priceRange: '$22–$55', links: link('Wellness CORE cat food') },
-      { name: 'Fancy Feast Gravy Lovers', brand: 'Fancy Feast', description: 'Wet food with rich gravy to boost hydration.', why: "Helps cats who don't drink enough water stay hydrated.", priceRange: '$10–$25', links: link('Fancy Feast wet cat food') },
+      { name: 'Royal Canin Breed Specific Dry Food', brand: 'Royal Canin', description: 'Tailored nutrition formulated for specific cat breeds.', why: `Specifically formulated for ${breed || 'your cat'}'s unique dietary and digestive needs.`, priceRange: '$25–$60', links: link(`Royal Canin ${breed || 'cat'} food`) },
+      { name: "Hill's Science Diet Adult Cat Food", brand: "Hill's", description: 'Vet-recommended balanced nutrition for adult cats.', why: `Supports healthy weight and digestion${conditions ? `, especially important given ${conditions}` : ''}.`, priceRange: '$20–$50', links: link(`Hills Science Diet ${breed || 'cat'} food`) },
+      { name: 'Purina Pro Plan High Protein', brand: 'Purina', description: 'High-protein formula with real chicken as first ingredient.', why: `High protein supports lean muscle${breed ? ` in ${breed}s` : ''}.`, priceRange: '$18–$45', links: link(`Purina Pro Plan ${breed || 'cat'} high protein food`) },
+      { name: 'Wellness CORE Grain-Free', brand: 'Wellness', description: 'Grain-free, protein-rich formula with no fillers.', why: `Good choice${allergies ? ` given ${cat.name}'s allergies` : ' for cats with grain sensitivities'}.`, priceRange: '$22–$55', links: link(`Wellness CORE grain free ${breed || 'cat'} food`) },
+      { name: 'Fancy Feast Gravy Lovers', brand: 'Fancy Feast', description: 'Wet food with rich gravy to boost hydration.', why: "Helps cats who don't drink enough water stay hydrated.", priceRange: '$10–$25', links: link(`Fancy Feast wet ${breed || 'cat'} food gravy`) },
     ],
     grooming: [
-      { name: 'Hertzko Self-Cleaning Slicker Brush', brand: 'Hertzko', description: 'Removes loose fur and detangles with retractable bristles.', why: 'Easy to clean and gentle on sensitive skin.', priceRange: '$15–$25', links: link('cat slicker brush') },
-      { name: 'FURminator Deshedding Tool', brand: 'FURminator', description: 'Reduces shedding up to 90% with stainless steel edge.', why: `Perfect for ${cat.breed || 'cats'} that shed heavily.`, priceRange: '$25–$45', links: link('FURminator cat deshedding tool') },
-      { name: "Burt's Bees Hypoallergenic Cat Shampoo", brand: "Burt's Bees", description: 'Gentle, tearless formula safe for sensitive cats.', why: 'Ideal if your cat has skin sensitivities or allergies.', priceRange: '$8–$15', links: link('hypoallergenic cat shampoo') },
-      { name: 'Safari Cat Nail Trimmer', brand: 'Safari', description: 'Stainless steel blades for clean, safe nail trims.', why: 'Keeps claws healthy and prevents scratching damage.', priceRange: '$8–$12', links: link('cat nail trimmer') },
-      { name: "Vet's Best Ear Cleaner", brand: "Vet's Best", description: 'Gentle ear cleaning solution with aloe and tea tree oil.', why: 'Helps prevent ear infections in indoor cats.', priceRange: '$8–$14', links: link('cat ear cleaner') },
+      { name: 'Hertzko Self-Cleaning Slicker Brush', brand: 'Hertzko', description: 'Removes loose fur and detangles with retractable bristles.', why: `Gentle on ${breed || 'your cat'}'s coat and easy to clean after each session.`, priceRange: '$15–$25', links: link(`${breed || 'cat'} slicker brush grooming`) },
+      { name: 'FURminator Deshedding Tool', brand: 'FURminator', description: 'Reduces shedding up to 90% with stainless steel edge.', why: `Highly effective for ${breed || 'cats'} that shed heavily.`, priceRange: '$25–$45', links: link(`FURminator ${breed || 'cat'} deshedding tool`) },
+      { name: "Burt's Bees Hypoallergenic Cat Shampoo", brand: "Burt's Bees", description: 'Gentle, tearless formula safe for sensitive cats.', why: `${allergies ? `Important given ${cat.name}'s allergies — hypoallergenic formula minimises reactions.` : 'Ideal for cats with skin sensitivities.'}`, priceRange: '$8–$15', links: link(`hypoallergenic ${breed || 'cat'} shampoo sensitive`) },
+      { name: 'Safari Cat Nail Trimmer', brand: 'Safari', description: 'Stainless steel blades for clean, safe nail trims.', why: 'Keeps claws healthy and prevents scratching damage.', priceRange: '$8–$12', links: link(`${breed || 'cat'} nail trimmer clippers`) },
+      { name: "Vet's Best Ear Cleaner", brand: "Vet's Best", description: 'Gentle ear cleaning solution with aloe and tea tree oil.', why: `Helps prevent ear infections${breed ? ` common in ${breed}s` : ' in indoor cats'}.`, priceRange: '$8–$14', links: link(`${breed || 'cat'} ear cleaner solution`) },
     ],
     toys: [
-      { name: 'Da Bird Feather Wand', brand: 'Go Cat', description: 'Interactive wand toy that mimics real bird movement.', why: 'Satisfies natural hunting instincts with engaging play.', priceRange: '$10–$18', links: link('feather wand cat toy') },
-      { name: 'KONG Kickeroo Cat Toy', brand: 'KONG', description: 'Crinkle and catnip-filled kicker for solo play.', why: 'Great for cats who love to wrestle and bunny-kick.', priceRange: '$8–$14', links: link('KONG cat kicker toy') },
-      { name: 'PetFusion Ambush Interactive Toy', brand: 'PetFusion', description: 'Electronic feather toy that pops out unpredictably.', why: "Keeps cats entertained even when you're busy.", priceRange: '$20–$35', links: link('electronic cat toy') },
-      { name: 'Catit Senses 2.0 Digger', brand: 'Catit', description: 'Puzzle feeder that slows eating and stimulates the mind.', why: 'Excellent mental enrichment for indoor cats.', priceRange: '$12–$20', links: link('cat puzzle feeder toy') },
-      { name: 'SmartyKat Hot Pursuit Toy', brand: 'SmartyKat', description: 'Concealed motion toy with unpredictable wand movement.', why: 'Triggers prey drive for active, playful cats.', priceRange: '$12–$22', links: link('SmartyKat cat toy') },
+      { name: 'Da Bird Feather Wand', brand: 'Go Cat', description: 'Interactive wand toy that mimics real bird movement.', why: `Satisfies ${breed || 'your cat'}'s natural hunting instincts with engaging interactive play.`, priceRange: '$10–$18', links: link(`${breed || 'cat'} feather wand interactive toy`) },
+      { name: 'KONG Kickeroo Cat Toy', brand: 'KONG', description: 'Crinkle and catnip-filled kicker for solo play.', why: `Great for ${breed || 'cats'} who love to wrestle and bunny-kick independently.`, priceRange: '$8–$14', links: link(`${breed || 'cat'} KONG kicker toy catnip`) },
+      { name: 'PetFusion Ambush Interactive Toy', brand: 'PetFusion', description: 'Electronic feather toy that pops out unpredictably.', why: `Keeps ${breed || 'cats'} entertained even when you're busy.`, priceRange: '$20–$35', links: link(`${breed || 'cat'} electronic interactive feather toy`) },
+      { name: 'Catit Senses 2.0 Digger', brand: 'Catit', description: 'Puzzle feeder that slows eating and stimulates the mind.', why: `Excellent mental enrichment${breed ? ` for ${breed}s` : ' for indoor cats'}.`, priceRange: '$12–$20', links: link(`${breed || 'cat'} puzzle feeder enrichment toy`) },
+      { name: 'SmartyKat Hot Pursuit Toy', brand: 'SmartyKat', description: 'Concealed motion toy with unpredictable wand movement.', why: `Triggers prey drive for active ${breed || 'cats'}.`, priceRange: '$12–$22', links: link(`${breed || 'cat'} SmartyKat motion toy`) },
     ],
     health: [
-      { name: 'Zesty Paws Multivitamin Bites', brand: 'Zesty Paws', description: 'All-in-one supplement for immune, skin, and joint health.', why: 'Supports overall wellness especially for aging cats.', priceRange: '$20–$35', links: link('cat multivitamin supplement') },
-      { name: 'Vetri-Science Hairball Support', brand: 'Vetri-Science', description: 'Chewable supplement to reduce hairball formation.', why: 'Helpful for cats that groom frequently.', priceRange: '$15–$25', links: link('cat hairball supplement') },
-      { name: 'Purina FortiFlora Probiotic', brand: 'Purina', description: 'Vet-recommended probiotic for digestive health.', why: 'Supports gut health and reduces digestive upset.', priceRange: '$25–$40', links: link('cat probiotic FortiFlora') },
-      { name: 'Cosequin Joint Health Supplement', brand: 'Cosequin', description: 'Glucosamine and chondroitin for joint support.', why: `Important for ${cat.age} cats to maintain mobility.`, priceRange: '$20–$40', links: link('cat joint supplement') },
-      { name: 'Feliway Classic Calming Diffuser', brand: 'Feliway', description: 'Pheromone diffuser that reduces stress and anxiety.', why: 'Helps cats feel safe in their environment.', priceRange: '$25–$45', links: link('Feliway cat calming diffuser') },
+      { name: 'Zesty Paws Multivitamin Bites', brand: 'Zesty Paws', description: 'All-in-one supplement for immune, skin, and joint health.', why: `Supports overall wellness${conditions ? `, especially helpful alongside ${conditions}` : ' for cats of all ages'}.`, priceRange: '$20–$35', links: link(`${breed || 'cat'} multivitamin supplement`) },
+      { name: 'Vetri-Science Hairball Support', brand: 'Vetri-Science', description: 'Chewable supplement to reduce hairball formation.', why: `Helpful for ${breed || 'cats'} that groom frequently.`, priceRange: '$15–$25', links: link(`${breed || 'cat'} hairball supplement`) },
+      { name: 'Purina FortiFlora Probiotic', brand: 'Purina', description: 'Vet-recommended probiotic for digestive health.', why: `Supports gut health${conditions ? ` — beneficial given ${conditions}` : ' and reduces digestive upset'}.`, priceRange: '$25–$40', links: link(`${breed || 'cat'} probiotic digestive FortiFlora`) },
+      { name: 'Cosequin Joint Health Supplement', brand: 'Cosequin', description: 'Glucosamine and chondroitin for joint support.', why: `Important for ${age || 'adult'} ${breed || 'cats'} to maintain mobility.`, priceRange: '$20–$40', links: link(`${breed || 'cat'} joint supplement glucosamine`) },
+      { name: 'Feliway Classic Calming Diffuser', brand: 'Feliway', description: 'Pheromone diffuser that reduces stress and anxiety.', why: 'Helps cats feel safe and reduces stress-related behaviours.', priceRange: '$25–$45', links: link(`${breed || 'cat'} calming diffuser stress anxiety`) },
     ],
     bedding: [
-      { name: 'K&H Pet Products Heated Cat Bed', brand: 'K&H', description: 'Orthopedic heated bed with removable washable cover.', why: 'Provides warmth and joint relief for comfortable sleep.', priceRange: '$30–$60', links: link('heated cat bed') },
-      { name: 'Aspen Pet Self-Warming Bed', brand: 'Aspen Pet', description: 'Reflects body heat without electricity for cosy warmth.', why: 'Safe, energy-free warmth for cats who love to curl up.', priceRange: '$15–$30', links: link('self warming cat bed') },
-      { name: 'Furhaven Orthopedic Cat Sofa', brand: 'Furhaven', description: 'Memory foam sofa-style bed with bolster sides.', why: 'Great for cats who like to rest their head on edges.', priceRange: '$25–$50', links: link('orthopedic cat bed') },
-      { name: 'Meowfia Premium Felt Cat Cave', brand: 'Meowfia', description: 'Handmade wool felt cave for cats who love enclosed spaces.', why: 'Perfect for shy or anxious cats needing a safe hideout.', priceRange: '$35–$55', links: link('felt cat cave') },
-      { name: 'Catit Vesper Cat Condo', brand: 'Catit', description: 'Multi-level condo with hideaway and perch.', why: 'Gives cats vertical space and a cosy sleeping spot.', priceRange: '$60–$100', links: link('cat condo tower') },
+      { name: 'K&H Pet Products Heated Cat Bed', brand: 'K&H', description: 'Orthopedic heated bed with removable washable cover.', why: `Provides warmth and joint relief${conditions ? ` — especially useful given ${conditions}` : ' for comfortable sleep'}.`, priceRange: '$30–$60', links: link(`${breed || 'cat'} heated orthopedic bed`) },
+      { name: 'Aspen Pet Self-Warming Bed', brand: 'Aspen Pet', description: 'Reflects body heat without electricity for cosy warmth.', why: `Safe, energy-free warmth for ${breed || 'cats'} who love to curl up.`, priceRange: '$15–$30', links: link(`${breed || 'cat'} self warming bed`) },
+      { name: 'Furhaven Orthopedic Cat Sofa', brand: 'Furhaven', description: 'Memory foam sofa-style bed with bolster sides.', why: `Great for ${breed || 'cats'} who like to rest their head on raised edges.`, priceRange: '$25–$50', links: link(`${breed || 'cat'} orthopedic memory foam sofa bed`) },
+      { name: 'Meowfia Premium Felt Cat Cave', brand: 'Meowfia', description: 'Handmade wool felt cave for cats who love enclosed spaces.', why: 'Perfect for shy or anxious cats needing a safe hideout.', priceRange: '$35–$55', links: link(`${breed || 'cat'} felt wool cave bed`) },
+      { name: 'Catit Vesper Cat Condo', brand: 'Catit', description: 'Multi-level condo with hideaway and perch.', why: `Gives ${breed || 'cats'} vertical space and a cosy sleeping spot.`, priceRange: '$60–$100', links: link(`${breed || 'cat'} condo tower perch`) },
     ],
     litter: [
-      { name: 'Dr. Elsey\'s Ultra Premium Clumping Litter', brand: "Dr. Elsey's", description: 'Hard-clumping, low-dust litter with superior odour control.', why: 'Great for cats sensitive to dust or strong scents.', priceRange: '$15–$30', links: link('clumping cat litter') },
-      { name: 'Arm & Hammer Clump & Seal', brand: 'Arm & Hammer', description: 'Baking soda formula seals and destroys odours on contact.', why: 'Keeps the litter box fresh for multi-cat households.', priceRange: '$12–$25', links: link('Arm Hammer cat litter') },
-      { name: 'Nature\'s Miracle Hooded Litter Box', brand: "Nature's Miracle", description: 'Hooded box with built-in odour control and easy-clean design.', why: 'Gives cats privacy and reduces litter scatter.', priceRange: '$25–$45', links: link('hooded cat litter box') },
-      { name: 'PetSafe ScoopFree Self-Cleaning Litter Box', brand: 'PetSafe', description: 'Automatic rake cleans waste 20 minutes after use.', why: 'Ideal for busy owners who want a low-maintenance setup.', priceRange: '$100–$160', links: link('self cleaning litter box') },
-      { name: 'Tidy Cats Breeze Litter System', brand: 'Tidy Cats', description: 'Pellet system separates solid and liquid waste.', why: 'Reduces odour and makes cleaning much easier.', priceRange: '$30–$50', links: link('Tidy Cats Breeze litter system') },
+      { name: "Dr. Elsey's Ultra Premium Clumping Litter", brand: "Dr. Elsey's", description: 'Hard-clumping, low-dust litter with superior odour control.', why: `${allergies ? `Low-dust formula is important given ${cat.name}'s sensitivities.` : `Great for ${breed || 'cats'} sensitive to dust or strong scents.`}`, priceRange: '$15–$30', links: link(`low dust clumping ${breed || 'cat'} litter`) },
+      { name: 'Arm & Hammer Clump & Seal', brand: 'Arm & Hammer', description: 'Baking soda formula seals and destroys odours on contact.', why: 'Keeps the litter box fresh for longer.', priceRange: '$12–$25', links: link(`Arm Hammer clump seal ${breed || 'cat'} litter odour`) },
+      { name: "Nature's Miracle Hooded Litter Box", brand: "Nature's Miracle", description: 'Hooded box with built-in odour control and easy-clean design.', why: `Gives ${breed || 'cats'} privacy and reduces litter scatter.`, priceRange: '$25–$45', links: link(`hooded ${breed || 'cat'} litter box odour control`) },
+      { name: 'PetSafe ScoopFree Self-Cleaning Litter Box', brand: 'PetSafe', description: 'Automatic rake cleans waste 20 minutes after use.', why: 'Ideal for busy owners who want a low-maintenance setup.', priceRange: '$100–$160', links: link(`self cleaning automatic ${breed || 'cat'} litter box`) },
+      { name: 'Tidy Cats Breeze Litter System', brand: 'Tidy Cats', description: 'Pellet system separates solid and liquid waste.', why: 'Reduces odour and makes cleaning much easier.', priceRange: '$30–$50', links: link(`Tidy Cats Breeze pellet ${breed || 'cat'} litter system`) },
     ],
     carrier: [
-      { name: 'Sherpa Original Deluxe Carrier', brand: 'Sherpa', description: 'Airline-approved soft-sided carrier with mesh panels.', why: 'Comfortable and secure for travel-anxious cats.', priceRange: '$40–$70', links: link('soft cat carrier airline approved') },
-      { name: 'Petmate Two-Door Top-Load Carrier', brand: 'Petmate', description: 'Hard-sided carrier with top and front door access.', why: 'Easy loading for cats that resist going in head-first.', priceRange: '$25–$45', links: link('hard cat carrier two door') },
-      { name: 'Morpilot Expandable Cat Backpack', brand: 'Morpilot', description: 'Bubble window backpack with expandable side panels.', why: 'Great for cats who enjoy watching the world go by.', priceRange: '$35–$60', links: link('cat backpack carrier bubble') },
-      { name: 'SportPet Designs Pop Open Carrier', brand: 'SportPet', description: 'Foldable pop-open carrier for quick setup and storage.', why: 'Convenient for vet visits and short trips.', priceRange: '$20–$35', links: link('pop open cat carrier') },
-      { name: 'K&H Travel Safety Carrier', brand: 'K&H', description: 'Crash-tested carrier with seatbelt attachment loop.', why: 'Keeps your cat safe during car journeys.', priceRange: '$50–$80', links: link('crash tested cat car carrier') },
+      { name: 'Sherpa Original Deluxe Carrier', brand: 'Sherpa', description: 'Airline-approved soft-sided carrier with mesh panels.', why: `Comfortable and secure for ${breed || 'cats'} during travel.`, priceRange: '$40–$70', links: link(`${breed || 'cat'} soft carrier airline approved travel`) },
+      { name: 'Petmate Two-Door Top-Load Carrier', brand: 'Petmate', description: 'Hard-sided carrier with top and front door access.', why: `Easy loading for ${breed || 'cats'} that resist going in head-first.`, priceRange: '$25–$45', links: link(`hard ${breed || 'cat'} carrier two door top load`) },
+      { name: 'Morpilot Expandable Cat Backpack', brand: 'Morpilot', description: 'Bubble window backpack with expandable side panels.', why: `Great for ${breed || 'cats'} who enjoy watching the world go by.`, priceRange: '$35–$60', links: link(`${breed || 'cat'} backpack carrier bubble window`) },
+      { name: 'SportPet Designs Pop Open Carrier', brand: 'SportPet', description: 'Foldable pop-open carrier for quick setup and storage.', why: 'Convenient for vet visits and short trips.', priceRange: '$20–$35', links: link(`pop open foldable ${breed || 'cat'} carrier vet`) },
+      { name: 'K&H Travel Safety Carrier', brand: 'K&H', description: 'Crash-tested carrier with seatbelt attachment loop.', why: `Keeps ${cat.name} safe during car journeys.`, priceRange: '$50–$80', links: link(`crash tested ${breed || 'cat'} car safety carrier`) },
     ],
     dental: [
-      { name: 'Virbac CET Enzymatic Toothpaste', brand: 'Virbac', description: 'Vet-recommended enzymatic toothpaste in poultry flavour.', why: 'Safe to swallow and effective at reducing plaque.', priceRange: '$8–$14', links: link('cat enzymatic toothpaste') },
-      { name: 'Arm & Hammer Cat Dental Kit', brand: 'Arm & Hammer', description: 'Complete kit with toothbrush, finger brush, and paste.', why: 'Everything needed to start a dental care routine.', priceRange: '$8–$15', links: link('cat dental kit toothbrush') },
-      { name: 'Greenies Feline Dental Treats', brand: 'Greenies', description: 'Crunchy treats that clean teeth and freshen breath.', why: 'Easy way to support dental health without brushing.', priceRange: '$8–$18', links: link('Greenies cat dental treats') },
-      { name: 'TropiClean Fresh Breath Water Additive', brand: 'TropiClean', description: 'Add to water bowl to reduce plaque and freshen breath.', why: 'Effortless dental care for cats that resist brushing.', priceRange: '$8–$14', links: link('cat water additive dental') },
-      { name: 'Oxyfresh Pet Dental Gel', brand: 'Oxyfresh', description: 'Odourless, tasteless gel applied to gums with a finger.', why: 'Ideal for cats that refuse toothbrushes entirely.', priceRange: '$12–$20', links: link('cat dental gel gum') },
+      { name: 'Virbac CET Enzymatic Toothpaste', brand: 'Virbac', description: 'Vet-recommended enzymatic toothpaste in poultry flavour.', why: `Safe to swallow and effective at reducing plaque in ${breed || 'cats'}.`, priceRange: '$8–$14', links: link(`${breed || 'cat'} enzymatic toothpaste dental`) },
+      { name: 'Arm & Hammer Cat Dental Kit', brand: 'Arm & Hammer', description: 'Complete kit with toothbrush, finger brush, and paste.', why: 'Everything needed to start a dental care routine.', priceRange: '$8–$15', links: link(`${breed || 'cat'} dental kit toothbrush paste`) },
+      { name: 'Greenies Feline Dental Treats', brand: 'Greenies', description: 'Crunchy treats that clean teeth and freshen breath.', why: `Easy way to support ${breed || 'your cat'}'s dental health without brushing.`, priceRange: '$8–$18', links: link(`${breed || 'cat'} dental treats teeth cleaning`) },
+      { name: 'TropiClean Fresh Breath Water Additive', brand: 'TropiClean', description: 'Add to water bowl to reduce plaque and freshen breath.', why: `Effortless dental care for ${breed || 'cats'} that resist brushing.`, priceRange: '$8–$14', links: link(`${breed || 'cat'} water additive dental plaque breath`) },
+      { name: 'Oxyfresh Pet Dental Gel', brand: 'Oxyfresh', description: 'Odourless, tasteless gel applied to gums with a finger.', why: `Ideal for ${breed || 'cats'} that refuse toothbrushes entirely.`, priceRange: '$12–$20', links: link(`${breed || 'cat'} dental gel gum health`) },
     ],
     scratching: [
-      { name: 'Pioneer Pet SmartCat Ultimate Scratching Post', brand: 'Pioneer Pet', description: 'Tall sisal post that lets cats fully stretch while scratching.', why: 'Redirects scratching away from furniture.', priceRange: '$25–$40', links: link('tall sisal cat scratching post') },
-      { name: 'Catit Style Scratcher with Catnip', brand: 'Catit', description: 'Corrugated cardboard scratcher with catnip included.', why: 'Satisfies the urge to scratch and claw naturally.', priceRange: '$10–$20', links: link('cardboard cat scratcher catnip') },
-      { name: 'PetFusion Ultimate Cat Scratcher Lounge', brand: 'PetFusion', description: 'Curved cardboard lounge that doubles as a bed.', why: 'Cats can scratch and nap in the same spot.', priceRange: '$30–$50', links: link('PetFusion cat scratcher lounge') },
-      { name: 'Hepper Hi-Lo Cat Scratcher', brand: 'Hepper', description: 'Adjustable angle scratcher for different scratching styles.', why: 'Suits cats who prefer horizontal or angled surfaces.', priceRange: '$35–$55', links: link('adjustable cat scratcher') },
-      { name: 'SoftPaws Nail Caps', brand: 'SoftPaws', description: 'Vinyl nail caps that prevent scratching damage.', why: 'Humane alternative to declawing for indoor cats.', priceRange: '$10–$18', links: link('SoftPaws cat nail caps') },
+      { name: 'Pioneer Pet SmartCat Ultimate Scratching Post', brand: 'Pioneer Pet', description: 'Tall sisal post that lets cats fully stretch while scratching.', why: `Redirects ${breed || 'your cat'}'s scratching away from furniture.`, priceRange: '$25–$40', links: link(`${breed || 'cat'} tall sisal scratching post`) },
+      { name: 'Catit Style Scratcher with Catnip', brand: 'Catit', description: 'Corrugated cardboard scratcher with catnip included.', why: `Satisfies ${breed || 'your cat'}'s urge to scratch and claw naturally.`, priceRange: '$10–$20', links: link(`${breed || 'cat'} cardboard scratcher catnip`) },
+      { name: 'PetFusion Ultimate Cat Scratcher Lounge', brand: 'PetFusion', description: 'Curved cardboard lounge that doubles as a bed.', why: `${breed || 'Cats'} can scratch and nap in the same spot.`, priceRange: '$30–$50', links: link(`${breed || 'cat'} scratcher lounge cardboard`) },
+      { name: 'Hepper Hi-Lo Cat Scratcher', brand: 'Hepper', description: 'Adjustable angle scratcher for different scratching styles.', why: `Suits ${breed || 'cats'} who prefer horizontal or angled surfaces.`, priceRange: '$35–$55', links: link(`${breed || 'cat'} adjustable angle scratcher`) },
+      { name: 'SoftPaws Nail Caps', brand: 'SoftPaws', description: 'Vinyl nail caps that prevent scratching damage.', why: `Humane alternative to declawing for indoor ${breed || 'cats'}.`, priceRange: '$10–$18', links: link(`SoftPaws ${breed || 'cat'} nail caps`) },
     ],
   }
 

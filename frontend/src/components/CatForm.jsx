@@ -51,8 +51,36 @@ export default function CatForm({ initial = {}, onSubmit, onCancel, loading }) {
 
   const validate = () => {
     const e = {}
-    if (!form.name.trim()) e.name = 'Cat name is required'
-    if (!form.age.trim())  e.age  = 'Age is required'
+
+    // Name
+    if (!form.name.trim())                 e.name = 'Cat name is required'
+    else if (form.name.trim().length < 2)  e.name = 'Name must be at least 2 characters'
+    else if (form.name.trim().length > 50) e.name = 'Name must be 50 characters or less'
+
+    // Age — must be a number between 0 and 30
+    if (form.age === '' || form.age === null || form.age === undefined) {
+      e.age = 'Age is required'
+    } else {
+      const numericAge = parseFloat(form.age)
+      if (isNaN(numericAge))       e.age = 'Age must be a number'
+      else if (numericAge < 0)     e.age = 'Age cannot be negative'
+      else if (numericAge > 30)    e.age = 'Please enter a realistic age (max 30 years)'
+    }
+
+    // Weight — optional but must be valid if provided
+    if (form.weight !== '' && form.weight !== null && form.weight !== undefined) {
+      const w = parseFloat(form.weight)
+      if (isNaN(w))    e.weight = 'Weight must be a number'
+      else if (w < 0)  e.weight = 'Weight cannot be negative'
+      else if (w > 30) e.weight = 'Weight seems too high (max 30kg)'
+    }
+
+    // Image URL — optional but must be valid if provided
+    if (form.image.trim()) {
+      try { new URL(form.image.trim()) }
+      catch { e.image = 'Please enter a valid URL (starting with https://)' }
+    }
+
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -62,10 +90,21 @@ export default function CatForm({ initial = {}, onSubmit, onCancel, loading }) {
     if (validate()) onSubmit(form)
   }
 
-  const focusStyle = (hasError) => ({
+  // Returns border color based on error + focus state via CSS class instead of inline style fighting
+  const fieldStyle = (key) => ({
     ...inputStyle,
-    borderColor: hasError ? 'var(--coral)' : 'var(--border)',
+    borderColor: errors[key] ? 'var(--coral)' : 'var(--border)',
+    boxShadow: 'none',
   })
+
+  const onFocus = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--accent-1)'
+    e.target.style.boxShadow   = `0 0 0 3px ${errors[key] ? 'rgba(239,68,68,0.15)' : 'var(--accent-soft)'}`
+  }
+  const onBlur = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--border)'
+    e.target.style.boxShadow   = 'none'
+  }
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
@@ -105,23 +144,27 @@ export default function CatForm({ initial = {}, onSubmit, onCancel, loading }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
         <Field label="Cat Name *" error={errors.name}>
           <input
-            style={focusStyle(errors.name)}
+            style={fieldStyle('name')}
             value={form.name}
             onChange={e => set('name', e.target.value)}
             placeholder="e.g. Luna"
             autoFocus
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = errors.name ? 'var(--coral)' : 'var(--border)'}
+            onFocus={onFocus('name')}
+            onBlur={onBlur('name')}
           />
         </Field>
-        <Field label="Age *" error={errors.age}>
+        <Field label="Age (years) *" error={errors.age}>
           <input
-            style={focusStyle(errors.age)}
+            style={fieldStyle('age')}
+            type="number"
+            min="0"
+            max="30"
+            step="0.5"
             value={form.age}
             onChange={e => set('age', e.target.value)}
-            placeholder="e.g. 2 years"
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = errors.age ? 'var(--coral)' : 'var(--border)'}
+            placeholder="e.g. 3"
+            onFocus={onFocus('age')}
+            onBlur={onBlur('age')}
           />
         </Field>
       </div>
@@ -144,15 +187,15 @@ export default function CatForm({ initial = {}, onSubmit, onCancel, loading }) {
             ))}
           </select>
         </Field>
-        <Field label="Weight (kg)">
+        <Field label="Weight (kg)" error={errors.weight}>
           <input
-            style={inputStyle}
+            style={fieldStyle('weight')}
             type="number" step="0.1" min="0" max="30"
             value={form.weight}
             onChange={e => set('weight', e.target.value)}
             placeholder="e.g. 4.2"
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            onFocus={onFocus('weight')}
+            onBlur={onBlur('weight')}
           />
         </Field>
       </div>
@@ -182,15 +225,15 @@ export default function CatForm({ initial = {}, onSubmit, onCancel, loading }) {
       </Field>
 
       {/* Photo URL */}
-      <Field label="Photo URL (optional)">
+      <Field label="Photo URL (optional)" error={errors.image}>
         <input
-          style={inputStyle}
+          style={fieldStyle('image')}
           value={form.image}
           onChange={e => set('image', e.target.value)}
           placeholder="https://..."
           type="url"
-          onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-          onBlur={e => e.target.style.borderColor = 'var(--border)'}
+          onFocus={onFocus('image')}
+          onBlur={onBlur('image')}
         />
         {form.image && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>

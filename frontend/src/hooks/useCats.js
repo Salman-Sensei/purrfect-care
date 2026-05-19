@@ -37,5 +37,11 @@ export function useCats() {
     setCats(prev => prev.filter(c => c._id !== id))
   }
 
-  return { cats, loading, error, fetchCats, createCat, updateCat, deleteCat }
+  const toggleShare = async (id) => {
+    const { data } = await api.post(`/cats/${id}/share`)
+    setCats(prev => prev.map(c => c._id === id ? { ...c, ...data } : c))
+    return data
+  }
+
+  return { cats, loading, error, fetchCats, createCat, updateCat, deleteCat, toggleShare }
 }

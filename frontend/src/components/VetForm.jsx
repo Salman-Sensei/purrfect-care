@@ -49,11 +49,65 @@ export default function VetForm({ cats = [], onSubmit, onCancel, loading, initia
 
   const set = (k, v) => { setForm(p => ({ ...p, [k]: v })); setErrors(p => ({ ...p, [k]: '' })) }
 
+  const fieldStyle = (key) => ({
+    ...inputStyle,
+    borderColor: errors[key] ? 'var(--coral)' : 'var(--border)',
+  })
+  const onFocus = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--accent-1)'
+    e.target.style.boxShadow   = `0 0 0 3px ${errors[key] ? 'rgba(239,68,68,0.15)' : 'var(--accent-soft)'}`
+  }
+  const onBlur = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--border)'
+    e.target.style.boxShadow   = 'none'
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     const e2 = {}
+
     if (!form.catId) e2.catId = 'Please select a cat'
     if (!form.date)  e2.date  = 'Date is required'
+
+    if (form.catId && form.date) {
+      const selectedCat = cats.find(c => c._id === form.catId)
+      const catAgeYears = selectedCat ? parseFloat(selectedCat.age) : null
+      const visitDate   = new Date(form.date)
+      const today       = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      // Visit date cannot be in the future
+      if (visitDate > today) {
+        e2.date = 'Visit date cannot be in the future'
+      }
+      // Cross-reference: visit date cannot be before the cat was born
+      else if (!isNaN(catAgeYears) && catAgeYears >= 0) {
+        const catBirthYear  = today.getFullYear() - catAgeYears
+        // Allow a 1-year buffer for partial years
+        const earliestValid = new Date(catBirthYear - 1, today.getMonth(), today.getDate())
+        if (visitDate < earliestValid) {
+          e2.date = `${selectedCat.name} is ${catAgeYears} year${catAgeYears !== 1 ? 's' : ''} old — this date is before they were born`
+        }
+      }
+    }
+
+    // Next visit must be after visit date and not too far in the future (10 years)
+    if (form.nextVisitDate && form.date) {
+      if (form.nextVisitDate <= form.date) {
+        e2.nextVisitDate = 'Next visit must be after the visit date'
+      } else {
+        const maxFuture = new Date()
+        maxFuture.setFullYear(maxFuture.getFullYear() + 10)
+        if (new Date(form.nextVisitDate) > maxFuture) {
+          e2.nextVisitDate = 'Next visit date seems too far in the future (max 10 years)'
+        }
+      }
+    }
+
+    if (form.vetName.trim().length > 60)  e2.vetName = 'Vet name must be 60 characters or less'
+    if (form.clinic.trim().length > 80)   e2.clinic  = 'Clinic name must be 80 characters or less'
+    if (form.notes.trim().length > 1000)  e2.notes   = 'Notes must be 1000 characters or less'
+
     if (Object.keys(e2).length) { setErrors(e2); return }
     onSubmit(form)
   }
@@ -65,11 +119,11 @@ export default function VetForm({ cats = [], onSubmit, onCancel, loading, initia
       <div>
         <label style={labelStyle}>Cat *</label>
         <select
-          style={{ ...inputStyle, cursor: 'pointer', borderColor: errors.catId ? 'var(--coral)' : 'var(--border)' }}
+          style={{ ...fieldStyle('catId'), cursor: 'pointer' }}
           value={form.catId}
           onChange={e => set('catId', e.target.value)}
-          onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-          onBlur={e => e.target.style.borderColor = errors.catId ? 'var(--coral)' : 'var(--border)'}
+          onFocus={onFocus('catId')}
+          onBlur={onBlur('catId')}
         >
           <option value="" style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)' }}>
             Select a cat...
@@ -119,23 +173,26 @@ export default function VetForm({ cats = [], onSubmit, onCancel, loading, initia
         <div>
           <label style={labelStyle}>Visit Date *</label>
           <input
-            style={{ ...inputStyle, borderColor: errors.date ? 'var(--coral)' : 'var(--border)' }}
+            style={fieldStyle('date')}
             type="date" value={form.date}
+            max={new Date().toISOString().split('T')[0]}
             onChange={e => set('date', e.target.value)}
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = errors.date ? 'var(--coral)' : 'var(--border)'}
+            onFocus={onFocus('date')}
+            onBlur={onBlur('date')}
           />
           {errors.date && <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>⚠️ {errors.date}</p>}
         </div>
         <div>
           <label style={labelStyle}>Next Visit (optional)</label>
           <input
-            style={inputStyle}
+            style={fieldStyle('nextVisitDate')}
             type="date" value={form.nextVisitDate}
+            min={form.date || new Date().toISOString().split('T')[0]}
             onChange={e => set('nextVisitDate', e.target.value)}
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = 'var(--border)'}
+            onFocus={onFocus('nextVisitDate')}
+            onBlur={onBlur('nextVisitDate')}
           />
+          {errors.nextVisitDate && <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>⚠️ {errors.nextVisitDate}</p>}
         </div>
       </div>
 
@@ -143,17 +200,19 @@ export default function VetForm({ cats = [], onSubmit, onCancel, loading, initia
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
         <div>
           <label style={labelStyle}>Vet Name</label>
-          <input style={inputStyle} value={form.vetName}
+          <input style={fieldStyle('vetName')}
+            value={form.vetName}
             onChange={e => set('vetName', e.target.value)} placeholder="Dr. Smith"
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = 'var(--border)'} />
+            onFocus={onFocus('vetName')} onBlur={onBlur('vetName')} />
+          {errors.vetName && <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>⚠️ {errors.vetName}</p>}
         </div>
         <div>
           <label style={labelStyle}>Clinic</label>
-          <input style={inputStyle} value={form.clinic}
+          <input style={fieldStyle('clinic')}
+            value={form.clinic}
             onChange={e => set('clinic', e.target.value)} placeholder="Happy Paws Clinic"
-            onFocus={e => e.target.style.borderColor = 'var(--accent-1)'}
-            onBlur={e => e.target.style.borderColor = 'var(--border)'} />
+            onFocus={onFocus('clinic')} onBlur={onBlur('clinic')} />
+          {errors.clinic && <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>⚠️ {errors.clinic}</p>}
         </div>
       </div>
 
@@ -161,13 +220,22 @@ export default function VetForm({ cats = [], onSubmit, onCancel, loading, initia
       <div>
         <label style={labelStyle}>Notes</label>
         <textarea
-          style={{ ...inputStyle, resize: 'vertical', minHeight: '96px', lineHeight: '1.6', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+          style={{ ...inputStyle, resize: 'vertical', minHeight: '96px', lineHeight: '1.6', paddingTop: '0.75rem', paddingBottom: '0.75rem', borderColor: errors.notes ? 'var(--coral)' : 'var(--border)' }}
           value={form.notes}
           onChange={e => set('notes', e.target.value)}
           placeholder="What did the vet say? Any medications or follow-up care needed?"
           onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
-          onBlur={e => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none' }}
+          onBlur={e => { e.target.style.borderColor = errors.notes ? 'var(--coral)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
         />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3rem' }}>
+          {errors.notes
+            ? <p style={{ color: 'var(--coral)', fontSize: '0.7rem' }}>⚠️ {errors.notes}</p>
+            : <span />
+          }
+          <p style={{ fontSize: '0.65rem', color: form.notes.length > 900 ? 'var(--coral)' : 'var(--text-muted)' }}>
+            {form.notes.length}/1000
+          </p>
+        </div>
       </div>
 
       {/* Actions */}

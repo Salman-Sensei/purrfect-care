@@ -14,6 +14,7 @@ import ChecklistPage     from './pages/ChecklistPage'
 import VetRecordsPage    from './pages/VetRecordsPage'
 import SymptomHelperPage from './pages/SymptomHelperPage'
 import ProductRecommendationsPage from './pages/ProductRecommendationsPage'
+import SharedCatPage from './pages/SharedCatPage'
 
 function RootRoute() {
   const { isAuthenticated, loading } = useAuth()
@@ -48,6 +49,7 @@ export default function App() {
               <Route path="/"       element={<RootRoute />} />
               <Route path="/login"  element={<div className="landing-root"><AuthPage /></div>} />
               <Route path="/signup" element={<div className="landing-root"><AuthPage /></div>} />
+              <Route path="/share/:token" element={<SharedCatPage />} />
 
               <Route path="/" element={
                 <ProtectedRoute><Layout /></ProtectedRoute>

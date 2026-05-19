@@ -9,6 +9,7 @@ import { useVetRecords } from '../hooks/useVetRecords'
 import TaskCard from '../components/TaskCard'
 import { SkeletonList } from '../components/SkeletonCard'
 import { getCatAvatar } from '../utils/catImages'
+import NotificationSettings from '../components/NotificationSettings'
 
 // ── Animated counter hook ──────────────────────────────────────────────────
 function useCountUp(target, duration = 800) {
@@ -419,6 +420,10 @@ export default function DashboardPage() {
       <p className="text-center text-xs italic pb-2" style={{ color: 'var(--text-muted)' }}>
         "Mark a task done and give your cat a little treat 🐟"
       </p>
+
+      {/* ── NOTIFICATION SETTINGS ── */}
+      <NotificationSettings />
+
     </motion.div>
   )
 }

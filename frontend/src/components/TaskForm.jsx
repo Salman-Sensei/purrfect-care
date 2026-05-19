@@ -54,6 +54,19 @@ export default function TaskForm({ cats = [], onSubmit, onCancel, loading, defau
 
   const set = (k, v) => { setForm(p => ({ ...p, [k]: v })); setErrors(p => ({ ...p, [k]: '' })) }
 
+  const fieldStyle = (key) => ({
+    ...inputStyle,
+    borderColor: errors[key] ? 'var(--coral)' : 'var(--border)',
+  })
+  const onFocus = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--accent-1)'
+    e.target.style.boxShadow   = `0 0 0 3px ${errors[key] ? 'rgba(239,68,68,0.15)' : 'var(--accent-soft)'}`
+  }
+  const onBlur = (key) => (e) => {
+    e.target.style.borderColor = errors[key] ? 'var(--coral)' : 'var(--border)'
+    e.target.style.boxShadow   = 'none'
+  }
+
   // Clicking a preset fills the title input — user can still edit it freely
   const pickPreset = (label, emoji) => {
     setForm(p => ({ ...p, title: label, emoji }))
@@ -63,14 +76,40 @@ export default function TaskForm({ cats = [], onSubmit, onCancel, loading, defau
   const handleSubmit = (e) => {
     e.preventDefault()
     const e2 = {}
+
     if (cats.length > 1 && !form.catId) e2.catId = 'Please select a cat'
-    if (!form.title.trim()) e2.title = 'Please enter a task name'
+    if (!form.title.trim())             e2.title = 'Please enter a task name'
+    else if (form.title.trim().length > 100) e2.title = 'Task name must be 100 characters or less'
+
+    if (!form.date) {
+      e2.date = 'Please select a date'
+    } else {
+      const taskDate  = new Date(form.date)
+      const today     = new Date(); today.setHours(0, 0, 0, 0)
+      const maxFuture = new Date(); maxFuture.setFullYear(maxFuture.getFullYear() + 1)
+
+      // Cannot be more than 1 year in the future
+      if (taskDate > maxFuture) {
+        e2.date = 'Date cannot be more than 1 year in the future'
+      } else {
+        // Cross-reference with cat's age — cannot predate the cat's birth
+        const selectedCat = cats.find(c => c._id === form.catId)
+        const catAge      = selectedCat ? parseFloat(selectedCat.age) : null
+        if (!isNaN(catAge) && catAge >= 0) {
+          const earliestValid = new Date()
+          earliestValid.setFullYear(earliestValid.getFullYear() - catAge - 1)
+          if (taskDate < earliestValid) {
+            e2.date = `${selectedCat.name} is ${catAge} year${catAge !== 1 ? 's' : ''} old — this date is before they were born`
+          }
+        }
+      }
+    }
+
     if (Object.keys(e2).length) { setErrors(e2); return }
     onSubmit(form)
   }
 
-  // Only block on catId when the multi-cat selector is actually visible
-  const cantSubmit = loading || !form.title.trim() || (cats.length > 1 && !form.catId)
+  const cantSubmit = loading || !form.title.trim() || !form.date || (cats.length > 1 && !form.catId)
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
@@ -144,14 +183,8 @@ export default function TaskForm({ cats = [], onSubmit, onCancel, loading, defau
           value={form.title}
           onChange={e => set('title', e.target.value)}
           placeholder="Pick a preset above, or type your own…"
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--accent-1)'
-            e.target.style.boxShadow   = '0 0 0 3px var(--accent-soft)'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = errors.title ? 'var(--coral)' : 'var(--border)'
-            e.target.style.boxShadow   = 'none'
-          }}
+          onFocus={onFocus('title')}
+          onBlur={onBlur('title')}
         />
         {errors.title && (
           <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>
@@ -191,19 +224,33 @@ export default function TaskForm({ cats = [], onSubmit, onCancel, loading, defau
       <div>
         <label style={labelStyle}>Date</label>
         <input
-          style={inputStyle}
+          style={{ ...inputStyle, borderColor: errors.date ? 'var(--coral)' : 'var(--border)' }}
           type="date"
           value={form.date}
+          min={(() => {
+            const selectedCat = cats.find(c => c._id === form.catId)
+            const catAge = selectedCat ? parseFloat(selectedCat.age) : null
+            if (!isNaN(catAge) && catAge >= 0) {
+              const d = new Date()
+              d.setFullYear(d.getFullYear() - Math.ceil(catAge) - 1)
+              return d.toISOString().split('T')[0]
+            }
+            return '2000-01-01'
+          })()}
+          max={(() => {
+            const d = new Date()
+            d.setFullYear(d.getFullYear() + 1)
+            return d.toISOString().split('T')[0]
+          })()}
           onChange={e => set('date', e.target.value)}
-          onFocus={e => {
-            e.target.style.borderColor = 'var(--accent-1)'
-            e.target.style.boxShadow   = '0 0 0 3px var(--accent-soft)'
-          }}
-          onBlur={e => {
-            e.target.style.borderColor = 'var(--border)'
-            e.target.style.boxShadow   = 'none'
-          }}
+          onFocus={onFocus('date')}
+          onBlur={onBlur('date')}
         />
+        {errors.date && (
+          <p style={{ color: 'var(--coral)', fontSize: '0.7rem', marginTop: '0.3rem' }}>
+            ⚠️ {errors.date}
+          </p>
+        )}
       </div>
 
       {/* Actions */}
