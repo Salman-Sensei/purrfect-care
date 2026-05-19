@@ -148,8 +148,8 @@ export default function CatProfilePage() {
                   {[
                     { l: 'Name',   v: cat.name },
                     { l: 'Age',    v: cat.age },
-                    { l: 'Breed',  v: cat.breed || '—' },
-                    { l: 'Weight', v: cat.weight ? `${cat.weight} kg` : '—' },
+                    { l: 'Breed',  v: cat.breed || '-' },
+                    { l: 'Weight', v: cat.weight ? `${cat.weight} kg` : '-' },
                   ].map(({ l, v }) => (
                     <div key={l} className="flex justify-between items-center py-3.5 first:pt-0 last:pb-0">
                       <dt className="text-xs font-black uppercase tracking-widest text-slate-400">{l}</dt>

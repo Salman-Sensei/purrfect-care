@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { CAT_LOGIN } from '../utils/catImages'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function AuthPage() {
   const [mode, setMode]         = useState('login')
@@ -55,7 +56,7 @@ export default function AuthPage() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' }}>
 
-      {/* LEFT — luxury cat photo panel */}
+      {/* LEFT , luxury cat photo panel */}
       <div style={{ display: 'none' }} className="auth-left-panel">
         <img src={CAT_LOGIN} alt="Beautiful cat"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -89,7 +90,7 @@ export default function AuthPage() {
               Every cat<br />deserves<br /><em style={{ color: '#a5b4fc' }}>great care.</em>
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: '1rem', lineHeight: 1.7, maxWidth: '22rem' }}>
-              Track daily care, vet visits, and health records — all in one beautiful place.
+              Track daily care, vet visits, and health records , all in one beautiful place.
             </p>
             <div style={{ marginTop: '2.5rem', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.75rem' }}>
               {[{ n: '10k+', l: 'Happy cats' }, { n: '98%', l: 'Satisfaction' }, { n: '24/7', l: 'Available' }].map(({ n, l }) => (
@@ -105,12 +106,12 @@ export default function AuthPage() {
             </div>
           </div>
           <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: '0.8rem', fontStyle: 'italic' }}>
-            "You're doing great — your cat is lucky to have you." 🐱
+            "You're doing great , your cat is lucky to have you." 🐱
           </p>
         </div>
       </div>
 
-      {/* RIGHT — form panel */}
+      {/* RIGHT , form panel */}
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '1.5rem', background: 'var(--bg-base)', position: 'relative',
@@ -207,10 +208,33 @@ export default function AuthPage() {
                     onFocus={e => { e.target.style.borderColor = 'var(--accent-1)'; e.target.style.boxShadow = '0 0 0 3px var(--accent-soft)' }}
                     onBlur={e => { e.target.style.borderColor = errors.password ? 'var(--coral)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
                   />
-                  <button type="button" onClick={() => setShowPass(s => !s)}
-                    style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.9rem', padding: '0.2rem' }}>
-                    {showPass ? '🙈' : '👁️'}
-                  </button>
+                  <button
+  type="button"
+  onClick={() => setShowPass(s => !s)}
+  style={{
+    position: 'absolute',
+    right: '0.875rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'var(--text-muted)',
+    padding: '0.2rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'color 0.2s ease',
+  }}
+  onMouseEnter={e => {
+    e.currentTarget.style.color = 'var(--accent-1)'
+  }}
+  onMouseLeave={e => {
+    e.currentTarget.style.color = 'var(--text-muted)'
+  }}
+>
+  {showPass ? <EyeOff size={18} strokeWidth={2.2} /> : <Eye size={18} strokeWidth={2.2} />}
+</button>
                 </div>
                 {errors.password && <p style={errorStyle}>⚠️ {errors.password}</p>}
               </div>

@@ -218,7 +218,7 @@ export default function ProductRecommendationsPage() {
           <p className="text-white/60 text-xs font-black uppercase tracking-widest mb-1">Smart Shopping</p>
           <h1 className="font-display text-3xl text-white mb-1">Product Recommendations</h1>
           <p className="text-white/75 text-sm">
-            Personalised product picks based on your cat's profile — with links to buy locally.
+            Personalised product picks based on your cat's profile ... with links to buy locally.
           </p>
         </div>
       </div>

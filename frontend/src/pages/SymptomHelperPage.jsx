@@ -4,7 +4,7 @@ import { CAT_SYMPTOM } from '../utils/catImages'
 
 const RULES = [
   { keywords:['vomit','throw up','puking','sick','nausea','throwing up'],   title:'Vomiting',           level:'warning',
-    advice:'Occasional vomiting can be normal — often hairballs. Withhold food for 2–4 hrs then offer bland food. If vomiting persists beyond 24 hours, contains blood, or your cat seems lethargic, contact your vet.',
+    advice:'Occasional vomiting can be normal , often hairballs. Withhold food for 2–4 hrs then offer bland food. If vomiting persists beyond 24 hours, contains blood, or your cat seems lethargic, contact your vet.',
     when:'Call your vet if: more than 3× in 24 hours, blood present, or severe lethargy.' },
   { keywords:['scratch','itch','itching','skin','fur loss','bald patch'],    title:'Scratching/Itching', level:'info',
     advice:'Scratching often means fleas, allergies, or dry skin. Check for flea dirt on the coat. If scratching creates open sores or significant hair loss, a vet visit is needed.',
@@ -13,14 +13,14 @@ const RULES = [
     advice:"Cats hide when stressed or unwell. A few hours is normal after stressful events. More than 24 hours with food/water refusal needs attention.",
     when:"Call if: hiding 24+ hours, refusing food and water, or combined with other symptoms." },
   { keywords:["not eating","won't eat","refusing food","no appetite","lost appetite","anorexia"], title:'Not Eating', level:'warning',
-    advice:'Skipping one meal is OK. But cats should not go without food 24–48+ hours — it can cause fatty liver disease (hepatic lipidosis) which is serious.',
+    advice:'Skipping one meal is OK. But cats should not go without food 24–48+ hours , it can cause fatty liver disease (hepatic lipidosis) which is serious.',
     urgent:true, when:'Call the vet if: not eating for more than 24 hours, especially with lethargy.' },
   { keywords:['blood','bleeding','bloody','red urine','blood in stool','bloody stool','bloody urine'], title:'Blood', level:'emergency',
-    advice:'Any visible blood — in urine, stool, or vomit — requires immediate vet attention. Do not wait.',
-    urgent:true, when:'🚨 EMERGENCY — contact your vet or emergency animal clinic immediately.' },
+    advice:'Any visible blood , in urine, stool, or vomit , requires immediate vet attention. Do not wait.',
+    urgent:true, when:'🚨 EMERGENCY , contact your vet or emergency animal clinic immediately.' },
   { keywords:['breathing','breathe','gasping','wheezing','coughing','can\'t breathe','open mouth'], title:'Breathing Difficulty', level:'emergency',
     advice:'Difficulty breathing is a medical emergency. Open-mouth breathing, rapid shallow breaths, or blue-tinged gums are critical signs.',
-    urgent:true, when:'🚨 EMERGENCY — get to a vet immediately, do not delay.' },
+    urgent:true, when:'🚨 EMERGENCY , get to a vet immediately, do not delay.' },
   { keywords:['limp','limping','leg','paw','injured paw','won\'t walk','can\'t walk','swollen leg'], title:'Limping/Injury', level:'warning',
     advice:'A limping cat may have a sprain, fracture, or wound. Check the paw for cuts. Avoid letting them jump. Seek care if limping is severe or persists 24+ hours.',
     when:'See vet if: sudden/severe limp, obvious swelling, or no improvement after a day.' },
@@ -29,7 +29,7 @@ const RULES = [
     when:'Call if: lasting over 2 days, blood present, or combined with lethargy.' },
   { keywords:['seizure','convulsion','shaking','trembling','fitting','twitching uncontrolled'], title:'Seizure/Convulsions', level:'emergency',
     advice:'Keep your cat away from furniture. Do not restrain them during a seizure. Time it if possible.',
-    urgent:true, when:'🚨 EMERGENCY — contact a vet immediately after any seizure.' },
+    urgent:true, when:'🚨 EMERGENCY , contact a vet immediately after any seizure.' },
   { keywords:['thirst','drinking a lot','drinking too much','excessive water','urinating a lot'], title:'Excessive Thirst', level:'info',
     advice:'Drinking much more than usual can signal diabetes, kidney disease, or hyperthyroidism. Note how much they drink and schedule a vet visit for a blood/urine test.',
     when:'Schedule a vet visit within a week if excessive thirst persists, especially with weight loss.' },
@@ -37,7 +37,7 @@ const RULES = [
     advice:'Sneezing and eye discharge can indicate a feline upper respiratory infection (cat cold). Keep them warm and hydrated. Most resolve in 7–10 days, but kittens need faster care.',
     when:'See vet if: symptoms persist over 10 days, appetite lost, or high fever.' },
   { keywords:['overweight','obese','fat','not moving much','inactive','lazy'], title:'Weight/Activity',   level:'info',
-    advice:'Weight gain and reduced activity in cats can signal hypothyroidism, arthritis, or heart issues — not just laziness. A vet wellness check is a good idea.',
+    advice:'Weight gain and reduced activity in cats can signal hypothyroidism, arthritis, or heart issues , not just laziness. A vet wellness check is a good idea.',
     when:'Schedule a wellness check if weight gain is sudden or activity drops noticeably.' },
 ]
 
@@ -109,7 +109,7 @@ export default function SymptomHelperPage() {
 
           {/* Quick symptom chips */}
           <div>
-            <p className="label mb-2">Common symptoms — tap to check</p>
+            <p className="label mb-2">Common symptoms , tap to check</p>
             <div className="flex flex-wrap gap-2">
               {QUICK_SYMPTOMS.map(s => (
                 <motion.button whileTap={{ scale: 0.93 }} type="button" key={s}
@@ -148,7 +148,7 @@ export default function SymptomHelperPage() {
                   <p className="text-4xl mb-3">🤔</p>
                   <p className="font-display text-xl text-slate-700 dark:text-slate-300 mb-2">No matching symptoms found</p>
                   <p className="text-sm text-slate-400 mb-4">Try different wording, or use one of the quick buttons above.</p>
-                  <p className="text-sm font-bold text-coral-600 dark:text-coral-400">When in doubt, call your vet — they'd rather hear from you! 🩺</p>
+                  <p className="text-sm font-bold text-coral-600 dark:text-coral-400">When in doubt, call your vet , they'd rather hear from you! 🩺</p>
                 </motion.div>
               : <>
                   <p className="text-sm font-bold text-slate-500 dark:text-slate-400 px-1">
@@ -183,7 +183,7 @@ export default function SymptomHelperPage() {
             <div className="card p-5 text-center dark:bg-slate-900">
               <p className="text-xs text-slate-400 leading-relaxed">
                 This guide uses predefined rules and is for reference only. For any serious or persistent symptoms, always contact your veterinarian.{' '}
-                <strong className="text-slate-500">When in doubt, call — vets would rather hear from a cautious owner!</strong> 🩺
+                <strong className="text-slate-500">When in doubt, call , vets would rather hear from a cautious owner!</strong> 🩺
               </p>
             </div>
           </motion.div>
