@@ -13,23 +13,33 @@ const app = express();
 connectDB();
 
 // 3. MIDDLEWARE
-// 🔥 CHANGE 1: Added JSON parser so backend can actually read signup data (req.body)
-app.use(express.json()); 
+app.use(express.json());
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://purrfect-care-seven.vercel.app',
+  'https://purrfect-care-git-develop-salman-senseis-projects.vercel.app',
+];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (
-      !origin ||
-      origin.includes('localhost') ||
-      origin.includes('vercel.app')
-    ) {
-      callback(null, true);
-    } else {
-      // 🔥 CHANGE 2: Pass 'false' instead of throwing a hard 'new Error()' 
-      // This stops the server from crashing during the browser handshake
-      callback(null, false); 
+
+    // allow requests with no origin (mobile apps/postman/etc)
+    if (!origin) return callback(null, true);
+
+    // allow exact origins
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+
+    // allow ALL vercel preview deployments
+    if (origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
   },
+
   credentials: true,
 }));
 
