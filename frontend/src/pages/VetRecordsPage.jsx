@@ -90,6 +90,9 @@ function VetRecordCard({ record, onEdit, onDelete }) {
 
 // ── Nearby Vets Map (embedded) ───────────────────────────────────────────────
 function NearbyVetsMap() {
+
+  console.log("MAP KEY:", import.meta.env.VITE_GOOGLE_MAPS_API_KEY)
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries: LIBRARIES,
@@ -138,7 +141,12 @@ function NearbyVetsMap() {
     setSelectedVet(null)
     const service = new window.google.maps.places.PlacesService(mapRef.current)
     service.nearbySearch(
-      { location, radius: 5000, type: 'veterinary_care' },
+      {
+  location,
+  radius: 5000,
+  type: 'veterinary_care',
+  keyword: 'veterinary clinic vet animal hospital'
+    },
       (results, status) => {
         setSearching(false)
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
