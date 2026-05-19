@@ -17,6 +17,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:5174',
   'https://purrfect-care-seven.vercel.app',
   'https://purrfect-care-git-develop-salman-senseis-projects.vercel.app',
 ];
@@ -49,6 +50,7 @@ app.use('/api/cats', require('./routes/catRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/vet', require('./routes/vetRoutes'));
 app.use('/api/assistant', require('./routes/assistant'));
+app.use('/api/vet-assistant', require('./routes/vetAssistant'));
 app.use('/api/products',  require('./routes/products'));
 
 // Health check
