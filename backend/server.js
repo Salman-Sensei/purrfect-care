@@ -50,6 +50,7 @@ app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/vet', require('./routes/vetRoutes'));
 app.use('/api/assistant', require('./routes/assistant'));
 app.use('/api/products',  require('./routes/products'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -77,4 +78,15 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server active on port ${PORT}`);
   console.log(`📡 Allowing requests from: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
+
+  // ── Daily email digest cron — runs every day at 8:00 AM ──────────────────
+  if (process.env.RESEND_API_KEY) {
+    const cron = require('node-cron');
+    const { sendDailyDigestToAll } = require('./services/emailService');
+    cron.schedule('0 8 * * *', () => {
+      console.log('⏰ Running daily email digest...');
+      sendDailyDigestToAll().catch(err => console.error('Digest error:', err.message));
+    });
+    console.log('📧 Daily email digest scheduled for 8:00 AM');
+  }
 });

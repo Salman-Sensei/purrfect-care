@@ -44,6 +44,15 @@ const catSchema = new mongoose.Schema({
     type: String,
     default: '#8B5CF6',
   },
+  shareToken: {
+    type: String,
+    default: null,
+    sparse: true,
+  },
+  isShared: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Cat', catSchema);
