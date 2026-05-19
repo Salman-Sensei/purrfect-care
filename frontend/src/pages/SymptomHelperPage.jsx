@@ -1,73 +1,192 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CAT_SYMPTOM } from '../utils/catImages'
 
-const RULES = [
-  { keywords:['vomit','throw up','puking','sick','nausea','throwing up'],   title:'Vomiting',           level:'warning',
-    advice:'Occasional vomiting can be normal , often hairballs. Withhold food for 2–4 hrs then offer bland food. If vomiting persists beyond 24 hours, contains blood, or your cat seems lethargic, contact your vet.',
-    when:'Call your vet if: more than 3× in 24 hours, blood present, or severe lethargy.' },
-  { keywords:['scratch','itch','itching','skin','fur loss','bald patch'],    title:'Scratching/Itching', level:'info',
-    advice:'Scratching often means fleas, allergies, or dry skin. Check for flea dirt on the coat. If scratching creates open sores or significant hair loss, a vet visit is needed.',
-    when:'See a vet if: open wounds, major hair loss, or you spot parasites.' },
-  { keywords:['hiding','hide','withdrawn','isolated','under bed','not moving'], title:'Hiding/Withdrawal', level:'warning',
-    advice:"Cats hide when stressed or unwell. A few hours is normal after stressful events. More than 24 hours with food/water refusal needs attention.",
-    when:"Call if: hiding 24+ hours, refusing food and water, or combined with other symptoms." },
-  { keywords:["not eating","won't eat","refusing food","no appetite","lost appetite","anorexia"], title:'Not Eating', level:'warning',
-    advice:'Skipping one meal is OK. But cats should not go without food 24–48+ hours , it can cause fatty liver disease (hepatic lipidosis) which is serious.',
-    urgent:true, when:'Call the vet if: not eating for more than 24 hours, especially with lethargy.' },
-  { keywords:['blood','bleeding','bloody','red urine','blood in stool','bloody stool','bloody urine'], title:'Blood', level:'emergency',
-    advice:'Any visible blood , in urine, stool, or vomit , requires immediate vet attention. Do not wait.',
-    urgent:true, when:'🚨 EMERGENCY , contact your vet or emergency animal clinic immediately.' },
-  { keywords:['breathing','breathe','gasping','wheezing','coughing','can\'t breathe','open mouth'], title:'Breathing Difficulty', level:'emergency',
-    advice:'Difficulty breathing is a medical emergency. Open-mouth breathing, rapid shallow breaths, or blue-tinged gums are critical signs.',
-    urgent:true, when:'🚨 EMERGENCY , get to a vet immediately, do not delay.' },
-  { keywords:['limp','limping','leg','paw','injured paw','won\'t walk','can\'t walk','swollen leg'], title:'Limping/Injury', level:'warning',
-    advice:'A limping cat may have a sprain, fracture, or wound. Check the paw for cuts. Avoid letting them jump. Seek care if limping is severe or persists 24+ hours.',
-    when:'See vet if: sudden/severe limp, obvious swelling, or no improvement after a day.' },
-  { keywords:['diarrhea','loose stool','watery stool','runny poop'],          title:'Diarrhea',           level:'warning',
-    advice:'Occasional diarrhea can result from diet changes or stress. Keep water available. If it lasts 2+ days or contains blood, see a vet.',
-    when:'Call if: lasting over 2 days, blood present, or combined with lethargy.' },
-  { keywords:['seizure','convulsion','shaking','trembling','fitting','twitching uncontrolled'], title:'Seizure/Convulsions', level:'emergency',
-    advice:'Keep your cat away from furniture. Do not restrain them during a seizure. Time it if possible.',
-    urgent:true, when:'🚨 EMERGENCY , contact a vet immediately after any seizure.' },
-  { keywords:['thirst','drinking a lot','drinking too much','excessive water','urinating a lot'], title:'Excessive Thirst', level:'info',
-    advice:'Drinking much more than usual can signal diabetes, kidney disease, or hyperthyroidism. Note how much they drink and schedule a vet visit for a blood/urine test.',
-    when:'Schedule a vet visit within a week if excessive thirst persists, especially with weight loss.' },
-  { keywords:['sneezing','sneeze','runny nose','eye discharge','watery eyes'],  title:'Cold Symptoms',     level:'info',
-    advice:'Sneezing and eye discharge can indicate a feline upper respiratory infection (cat cold). Keep them warm and hydrated. Most resolve in 7–10 days, but kittens need faster care.',
-    when:'See vet if: symptoms persist over 10 days, appetite lost, or high fever.' },
-  { keywords:['overweight','obese','fat','not moving much','inactive','lazy'], title:'Weight/Activity',   level:'info',
-    advice:'Weight gain and reduced activity in cats can signal hypothyroidism, arthritis, or heart issues , not just laziness. A vet wellness check is a good idea.',
-    when:'Schedule a wellness check if weight gain is sudden or activity drops noticeably.' },
+const QUICK_SYMPTOMS = [
+  'Vomiting', 'Hiding', 'Not eating', 'Scratching',
+  'Limping', 'Diarrhea', 'Sneezing', 'Seizure',
+  'Blood in stool', 'Breathing trouble',
 ]
 
-const LEVEL_STYLE = {
-  info:      { bg:'bg-blue-50 dark:bg-blue-900/20', border:'border-blue-200 dark:border-blue-800', text:'text-blue-800 dark:text-blue-300', badge:'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400', icon:'ℹ️', label:'Non-Urgent' },
-  warning:   { bg:'bg-amber-50 dark:bg-amber-900/20', border:'border-amber-200 dark:border-amber-800', text:'text-amber-800 dark:text-amber-300', badge:'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400', icon:'⚠️', label:'Monitor Closely' },
-  emergency: { bg:'bg-red-50 dark:bg-red-900/20', border:'border-red-300 dark:border-red-700', text:'text-red-800 dark:text-red-300', badge:'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400', icon:'🚨', label:'Emergency!' },
+function UserBubble({ text }) {
+  return (
+    <div className="flex justify-end">
+      <div className="max-w-[80%] bg-brand-600 text-white rounded-3xl rounded-br-md px-4 py-3 text-sm leading-relaxed shadow-sm">
+        {text}
+      </div>
+    </div>
+  )
 }
 
-const QUICK_SYMPTOMS = ['Vomiting','Hiding','Not eating','Scratching','Limping','Diarrhea','Sneezing','Seizure','Blood in stool','Breathing trouble']
+function DrPawsBubble({ reply, needsVet, vets, loading }) {
+  return (
+    <div className="flex items-start gap-3">
+      {/* Avatar */}
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white text-sm flex-shrink-0 shadow">
+        🩺
+      </div>
+
+      <div className="flex-1 space-y-3">
+        {loading ? (
+          <div className="flex gap-1.5 items-center px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-3xl rounded-tl-md w-fit">
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{
+                width: 7, height: 7, borderRadius: '50%',
+                background: 'var(--accent-1)',
+                animation: `bounce 1s ease-in-out ${i * 0.18}s infinite`,
+              }} />
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Response bubble */}
+            <div className="bg-slate-100 dark:bg-slate-800 rounded-3xl rounded-tl-md px-4 py-3 text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Dr. Paws</span>
+                {needsVet !== undefined && (
+                  needsVet
+                    ? <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 font-bold">Vet Recommended</span>
+                    : <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 font-bold">Home Care OK</span>
+                )}
+              </div>
+              {reply}
+            </div>
+
+            {/* Vet links */}
+            {needsVet && vets && vets.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                className="space-y-2"
+              >
+                <p className="text-xs text-slate-400 px-1">🏥 Nearby vets — tap to open in Google Maps</p>
+                {vets.map((vet, i) => (
+                  <motion.a
+                    key={i}
+                    href={vet.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-start gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-brand-300 transition-all no-underline block"
+                  >
+                    <span className="text-base flex-shrink-0">📍</span>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">{vet.name}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{vet.address}</p>
+                      <p className="text-xs font-bold text-brand-600 dark:text-brand-400 mt-1">Open in Google Maps →</p>
+                    </div>
+                  </motion.a>
+                ))}
+              </motion.div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const STORAGE_KEY = 'drpaws_chat'
+
+const defaultMessages = [
+  {
+    role: 'assistant',
+    reply: "Hi! I'm Dr. Paws 🐾 Describe your cat's symptoms and I'll give you professional guidance. You can type freely or tap a quick symptom below.",
+    needsVet: undefined,
+    vets: [],
+  }
+]
+
+function loadMessages() {
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY)
+    return saved ? JSON.parse(saved) : defaultMessages
+  } catch {
+    return defaultMessages
+  }
+}
 
 export default function SymptomHelperPage() {
-  const [query, setQuery]         = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [results, setResults]     = useState([])
+  const [messages, setMessages] = useState(loadMessages)
+  const [input, setInput]     = useState('')
+  const [loading, setLoading] = useState(false)
+  const bottomRef             = useRef(null)
 
-  const analyze = (q) => {
-    const lower = q.toLowerCase()
-    const found = RULES.filter(r => r.keywords.some(k => lower.includes(k)))
-    setResults(found)
-    setSubmitted(true)
+  // Persist messages to sessionStorage whenever they change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages))
+    } catch {}
+  }, [messages])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, loading])
+
+  const sendMessage = async (text) => {
+    if (!text.trim() || loading) return
+
+    const userMsg = { role: 'user', text, content: text }
+    setMessages(prev => [...prev, userMsg])
+    setInput('')
+    setLoading(true)
+
+    // Build history from previous messages for multi-turn context
+    const history = messages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({
+        role: m.role,
+        content: m.role === 'user' ? m.text : m.reply,
+      }))
+
+    try {
+      const token = localStorage.getItem('purrfect_token')
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/vet-assistant/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ input: text.trim(), history }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed')
+
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        reply: data.reply,
+        needsVet: data.needsVet,
+        vets: data.vets || [],
+      }])
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        reply: "Sorry, I couldn't process that right now. Please try again in a moment.",
+        needsVet: false,
+        vets: [],
+      }])
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleSubmit = (e) => { e.preventDefault(); if (query.trim()) analyze(query) }
-  const reset = () => { setQuery(''); setSubmitted(false); setResults([]) }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    sendMessage(input)
+  }
+
+  const handleQuickPick = (symptom) => {
+    sendMessage(symptom)
+  }
+
+  const clearChat = () => {
+    sessionStorage.removeItem(STORAGE_KEY)
+    setMessages(defaultMessages)
+  }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22,1,0.36,1] }}
-      className="space-y-5 pb-8 max-w-2xl">
-
+    <motion.div
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col space-y-4 pb-8 max-w-2xl"
+    >
       {/* Hero */}
       <div className="card overflow-hidden relative">
         <div className="absolute inset-0">
@@ -77,118 +196,108 @@ export default function SymptomHelperPage() {
         <div className="relative z-10 p-6 md:p-8">
           <div className="flex items-start gap-4">
             <div>
-              <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">Quick Reference</p>
+              <p className="text-slate-400 text-xs font-black uppercase tracking-widest mb-2">AI Powered</p>
               <h1 className="font-display text-3xl text-white mb-2">Symptom Guide</h1>
               <p className="text-slate-300 text-sm leading-relaxed max-w-sm">
-                Describe what your cat is doing and get instant guidance on whether to call the vet.
+                Chat with Dr. Paws — describe your cat's symptoms and get professional guidance instantly.
               </p>
             </div>
-            <div className="text-5xl flex-shrink-0 animate-float">🔍</div>
+            <div className="text-5xl flex-shrink-0 animate-float">🩺</div>
           </div>
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="flex gap-3 items-start p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-        <span className="text-xl flex-shrink-0">⚠️</span>
-        <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
-          <strong>Not medical advice.</strong> This guide uses predefined rules for reference only. For serious, urgent, or unclear symptoms, always contact your veterinarian immediately.
-        </p>
-      </div>
+      {/* Chat window */}
+      <div className="card dark:bg-slate-900 flex flex-col" style={{ minHeight: '420px' }}>
+        {/* Messages */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <span className="text-xs font-black uppercase tracking-widest text-slate-400">Dr. Paws Consultation</span>
+          {messages.length > 1 && (
+            <button onClick={clearChat} className="text-xs text-slate-400 hover:text-red-400 transition-colors">
+              Clear chat
+            </button>
+          )}
+        </div>
+        {/* Messages */}
+        <div className="flex-1 p-4 space-y-4 overflow-y-auto" style={{ maxHeight: '420px' }}>
+          <AnimatePresence initial={false}>
+            {messages.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {msg.role === 'user'
+                  ? <UserBubble text={msg.text} />
+                  : <DrPawsBubble reply={msg.reply} needsVet={msg.needsVet} vets={msg.vets} />
+                }
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
-      {/* Search card */}
-      <div className="card p-6 dark:bg-slate-900">
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="label">What's your cat doing?</label>
-            <textarea className="input dark:bg-slate-800 dark:border-slate-700 dark:text-white resize-none text-sm mt-1" rows={3}
-              value={query} onChange={e => { setQuery(e.target.value); setSubmitted(false) }}
-              placeholder={'e.g. "My cat has been hiding all day and won\'t eat"\n"My cat keeps vomiting and seems lethargic"'}
-            />
-          </div>
+          {/* Loading bubble */}
+          {loading && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <DrPawsBubble loading />
+            </motion.div>
+          )}
 
-          {/* Quick symptom chips */}
-          <div>
-            <p className="label mb-2">Common symptoms , tap to check</p>
-            <div className="flex flex-wrap gap-2">
-              {QUICK_SYMPTOMS.map(s => (
-                <motion.button whileTap={{ scale: 0.93 }} type="button" key={s}
-                  onClick={() => { setQuery(s); analyze(s) }}
-                  className="text-xs px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300
-                             hover:bg-brand-100 dark:hover:bg-brand-900/30 hover:text-brand-700 dark:hover:text-brand-300
-                             border border-slate-200 dark:border-slate-700 hover:border-brand-300
-                             transition-all font-semibold">
-                  {s}
-                </motion.button>
-              ))}
-            </div>
-          </div>
+          <div ref={bottomRef} />
+        </div>
 
-          <div className="flex gap-3">
-            <motion.button whileTap={{ scale: 0.97 }} type="submit" disabled={!query.trim()} className="btn-primary flex-1">
-              Analyze Symptoms 🔍
-            </motion.button>
-            {submitted && (
-              <motion.button initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                type="button" onClick={reset} className="btn-secondary">
-                Clear
+        {/* Divider */}
+        <div className="border-t border-slate-100 dark:border-slate-800" />
+
+        {/* Quick symptom chips */}
+        <div className="px-4 pt-3 pb-2">
+          <p className="text-xs text-slate-400 mb-2 font-semibold">Quick symptoms</p>
+          <div className="flex flex-wrap gap-1.5">
+            {QUICK_SYMPTOMS.map(s => (
+              <motion.button
+                key={s}
+                whileTap={{ scale: 0.93 }}
+                type="button"
+                disabled={loading}
+                onClick={() => handleQuickPick(s)}
+                className="text-xs px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300
+                           hover:bg-brand-100 dark:hover:bg-brand-900/30 hover:text-brand-700 dark:hover:text-brand-300
+                           border border-slate-200 dark:border-slate-700 hover:border-brand-300
+                           transition-all font-semibold disabled:opacity-50"
+              >
+                {s}
               </motion.button>
-            )}
+            ))}
           </div>
+        </div>
+
+        {/* Input */}
+        <form onSubmit={handleSubmit} className="flex gap-2 p-4 pt-2">
+          <input
+            type="text"
+            className="input flex-1 dark:bg-slate-800 dark:border-slate-700 dark:text-white text-sm"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Describe your cat's symptoms..."
+            disabled={loading}
+          />
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            disabled={!input.trim() || loading}
+            className="btn-primary px-4 disabled:opacity-50"
+          >
+            Send
+          </motion.button>
         </form>
       </div>
 
-      {/* Results */}
-      <AnimatePresence>
-        {submitted && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
-            {results.length === 0
-              ? <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-                  className="card p-8 text-center dark:bg-slate-900">
-                  <p className="text-4xl mb-3">🤔</p>
-                  <p className="font-display text-xl text-slate-700 dark:text-slate-300 mb-2">No matching symptoms found</p>
-                  <p className="text-sm text-slate-400 mb-4">Try different wording, or use one of the quick buttons above.</p>
-                  <p className="text-sm font-bold text-coral-600 dark:text-coral-400">When in doubt, call your vet , they'd rather hear from you! 🩺</p>
-                </motion.div>
-              : <>
-                  <p className="text-sm font-bold text-slate-500 dark:text-slate-400 px-1">
-                    Found {results.length} matching result{results.length > 1 ? 's' : ''}:
-                  </p>
-                  {results.map((r, i) => {
-                    const s = LEVEL_STYLE[r.level]
-                    return (
-                      <motion.div key={r.title}
-                        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08, ease: [0.22,1,0.36,1] }}
-                        className={`rounded-3xl border p-6 ${s.bg} ${s.border}`}>
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="text-3xl">{s.icon}</span>
-                          <div className="flex-1">
-                            <h3 className={`font-display text-xl ${s.text}`}>{r.title}</h3>
-                          </div>
-                          <span className={`badge text-xs ${s.badge}`}>{s.label}</span>
-                        </div>
-                        <p className={`text-sm leading-relaxed mb-4 ${s.text} opacity-90`}>{r.advice}</p>
-                        <div className={`text-xs font-bold ${s.text} bg-white/50 dark:bg-black/20 rounded-xl px-4 py-3 flex items-start gap-2`}>
-                          <span className="flex-shrink-0 mt-0.5">📞</span>
-                          <span>{r.when}</span>
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                </>
-            }
-
-            {/* Footer disclaimer */}
-            <div className="card p-5 text-center dark:bg-slate-900">
-              <p className="text-xs text-slate-400 leading-relaxed">
-                This guide uses predefined rules and is for reference only. For any serious or persistent symptoms, always contact your veterinarian.{' '}
-                <strong className="text-slate-500">When in doubt, call , vets would rather hear from a cautious owner!</strong> 🩺
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <style>{`
+        @keyframes bounce {
+          0%, 60%, 100% { transform: translateY(0); }
+          30% { transform: translateY(-5px); }
+        }
+      `}</style>
     </motion.div>
   )
 }
