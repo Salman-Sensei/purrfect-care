@@ -10,7 +10,7 @@
 ### Smart Cat Care Companion
 
 **Track daily care · Manage vet visits · Monitor health**
-— all in one beautiful, full-stack web app.
+ all in one beautiful, full-stack web app.
 
 <br/>
 
@@ -51,9 +51,9 @@
 
 ## ✨ Overview
 
-**Purrfect Care** is a production-ready MERN stack web application built as a Complex Engineering Problem (CEP) lab project for the Web Engineering course at Bahria University, Karachi.
+**Purrfect Care** is a production-ready MERN stack web application built as a Complex Engineering Problem (CEP) solving project.
 
-Cat owners — especially new and busy pet parents — have no single digital tool to manage their cat's complete care. Notes get lost, vet records are scattered, and medication schedules are forgotten. Purrfect Care solves all of that.
+Cat owners , especially new and busy pet parents , have no single digital tool to manage their cat's complete care. Notes get lost, vet records are scattered, and medication schedules are forgotten. Purrfect Care solves all of that.
 
 > *"Every cat deserves great care."*
 
@@ -74,8 +74,8 @@ Cat owners — especially new and busy pet parents — have no single digital to
 ### 🔐 Authentication
 - Secure signup and login with email and password
 - Passwords hashed with **bcryptjs** (10 salt rounds)
-- **JWT tokens** — 30-day sessions stored in localStorage
-- All routes protected — data completely isolated per user
+- **JWT tokens** : 30-day sessions stored in localStorage
+- All routes protected : data completely isolated per user
 - Auto-redirect to login on token expiry
 
 ### 🐱 Cat Profiles
@@ -106,6 +106,7 @@ Cat owners — especially new and busy pet parents — have no single digital to
 - Upcoming vet visit reminders
 
 ### 🔍 Symptom Guide
+- Dr Paw ( Ai assistant that suggest you vaccine) 
 - Type symptoms or tap quick-select buttons
 - Matches against **12 predefined health rules**
 - Colour-coded urgency: 🔵 Non-urgent · ⚠️ Warning · 🚨 Emergency
@@ -122,7 +123,7 @@ Cat owners — especially new and busy pet parents — have no single digital to
 | 🔥 Ember | Dark | Warm, cozy |
 
 ### 🌐 3D Landing Page
-- **Three.js** animated background — floating orbs, star field, particle swarm, torus rings
+- **Three.js** animated background : floating orbs, star field, particle swarm, torus rings
 - Custom cursor with smooth trailing ring
 - Scroll-reveal animations on all sections
 - Animated stat counters, feature cards, testimonials
@@ -259,6 +260,7 @@ PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 OPENROUTER_API_KEY=your_openrouter_key_here
+Resend_Email_API_KEY=your key
 ```
 
 Start backend:
@@ -433,11 +435,11 @@ git push origin feature/your-feature-name
 | Three.js 3D landing page | ✅ Live |
 | Mobile responsive | ✅ Live |
 | Toast notifications | ✅ Live |
-| Nearest vet finder (Google Maps) | 🔄 In Progress |
-| AI-powered symptom detector | 📅 Planned |
-| Food recommendations | 📅 Planned |
-| Email reminders for vet visits | 📅 Planned |
-| Cloud image upload | 📅 Planned |
+| Nearest vet finder (Google Maps) | ✅ Live |
+| AI-powered symptom detector |✅ Live |
+| Food recommendations |✅ Live |
+| Email reminders for vet visits |✅ Live |
+| Cloud image upload | 📅 Planned , Inshallah soon |
 
 ---
 
@@ -445,20 +447,15 @@ git push origin feature/your-feature-name
 
 | Name | Role | GitHub |
 |------|------|--------|
-| **Salman Khan** | Team Lead · Full-Stack Developer | [@Salman-Sensei](https://github.com/Salman-Sensei) |
-| Teammate 2 | Frontend Developer | — |
-| Teammate 3 | Backend Developer | — |
-| Teammate 4 | UI/UX + Testing | — |
-
-**University:** Bahria University, Karachi Campus
-**Course:** Web Engineering (SEL 310) · Spring 2026
-**Class:** BSE – 6(C)
+| **Salman Khan** | Team Lead · MERN-Stack Developer | [@Salman-Sensei](https://github.com/Salman-Sensei) |
+| **Jawad Ul Hassan** | ML Developer |https://github.com/jawadUlHassan069  |
+| **Omer Siddiqui** | UI/UX + Testing + Features adder Guy | https://github.com/omer9618 |
 
 ---
 
 ## 📄 License
 
-MIT — free to use for personal and commercial projects.
+MIT - free to use for personal and commercial projects. reach out on gmail , LinkedIn or what ever source i would love to help and  i would love any suggestions improving the Perrfect Care , Thank You 🤍
 
 ---
 
