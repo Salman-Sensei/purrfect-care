@@ -17,6 +17,7 @@ function CatSVG({ mood, eyeOffset, isBlinking }) {
       viewBox="0 0 120 140"
       width="90"
       height="105"
+      className="cat-svg-size"
       xmlns="http://www.w3.org/2000/svg"
       style={{ filter: 'drop-shadow(0 8px 24px rgba(91,106,247,0.35))' }}
     >
@@ -195,17 +196,17 @@ export default function AnimeAssistant() {
     <>
       {/* ── Fixed container bottom-right ── */}
       <div
-        style={{
-          position: 'fixed',
-          bottom: '1.5rem',
-          right: '1.75rem',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: '0.75rem',
-          pointerEvents: 'none',
-        }}
+style={{
+  position: 'fixed',
+  bottom: 'var(--assistant-bottom, 1.5rem)',
+  right: 'var(--assistant-right, 1.75rem)',
+  zIndex: 9999,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  gap: '0.75rem',
+  pointerEvents: 'none',
+}}
       >
         {/* Chat window */}
         {chatOpen && (
@@ -255,11 +256,23 @@ export default function AnimeAssistant() {
       </div>
 
       <style>{`
-        @keyframes assistantPulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50%       { transform: scale(1.3); opacity: 0.7; }
-        }
-      `}</style>
+  @keyframes assistantPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  /* ── Mobile: smaller + above bottom nav ── */
+  @media (max-width: 768px) {
+    :root {
+      --assistant-bottom: 5.5rem;
+      --assistant-right: 0.75rem;
+    }
+    .cat-svg-size {
+      width: 62px !important;
+      height: 72px !important;
+    }
+  }
+`}</style>
     </>
   )
 }
